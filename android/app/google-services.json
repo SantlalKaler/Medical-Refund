@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "956335641670",
+    "project_id": "medical-refund",
+    "storage_bucket": "medical-refund.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:956335641670:android:d7d62fcc33b18610846647",
+        "android_client_info": {
+          "package_name": "com.medicalrefund.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "956335641670-ofj9t35gajhh13iom8a2jrp211pffg4k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCmisHFHcWvDmPIlParIo3LsGUj-A9ZJo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "956335641670-ofj9t35gajhh13iom8a2jrp211pffg4k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
