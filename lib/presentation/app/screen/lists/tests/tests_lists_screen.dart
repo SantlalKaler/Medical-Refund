@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:figma_squircle/figma_squircle.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -116,7 +117,7 @@ class _TestsListsScreenState extends State<TestsListsScreen> {
 }
 
 Widget singleTestView(Tests test, onTap, Color color,
-    {bool showPrice = false}) {
+    {bool showPrice = false, bool testSelected = false}) {
   return InkWell(
     onTap: onTap,
     child: Container(
@@ -130,36 +131,43 @@ Widget singleTestView(Tests test, onTap, Color color,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // getVerSpace(14.h),
-          // Flexible(
-          //   child: Center(
-          //       child: getNetworkImage(
-          //           test.image ?? AppUrls.imageBaseUrl + test.thumb!,
-          //           boxFit: BoxFit.fill)),
-          // ),
-          // getVerSpace(12.h),
-          getCustomFont(test.test!.title ?? '', 18.sp, Colors.black, 3,
-              fontWeight: FontWeight.bold),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (showPrice)
+                Checkbox(
+                    value: testSelected,
+                    onChanged: (value) {
+                      onTap();
+                    }),
+              Expanded(
+                child: getCustomFont(
+                    test.test!.title ?? '', 15.sp, Colors.black, 30,
+                    fontWeight: FontWeight.w700),
+              ),
+            ],
+          ),
           showPrice
               ? Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     getVerSpace(12.h),
-                    buildTaxRow('Price',
-                        Constant.getRuppee(test.priceBefore), '',),
                     buildTaxRow(
-                        'Pay only', Constant.getRuppee(test.price), '', fontWeight: FontWeight.w700),
+                      'Price',
+                      Constant.getRuppee(test.priceBefore),
+                      '',
+                    ),
+                    buildTaxRow('Pay only', Constant.getRuppee(test.price), '',
+                        fontWeight: FontWeight.w700),
                     getVerSpace(10.h),
-                    buildTaxRow(
-                        'MR will pay',
-                        Constant.getRuppee(
-                            test.priceBefore! - test.price!),
-                        '', color: accentColor),
+                    buildTaxRow('MR will pay',
+                        Constant.getRuppee(test.priceBefore! - test.price!), '',
+                        color: accentColor),
                   ],
                 )
               : Container(),
-          getVerSpace(12.h),
         ],
       ),
     ),

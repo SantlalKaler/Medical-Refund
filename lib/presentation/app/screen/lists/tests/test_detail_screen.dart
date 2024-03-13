@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:lab_test_app/domain/model/test.dart';
 import 'package:lab_test_app/presentation/app/screen/lists/labDetail/lab_controller.dart';
 import 'package:lab_test_app/presentation/app/screen/lists/tests/test_controller.dart';
-import 'package:readmore/readmore.dart';
 
 import '../../../../base/color_data.dart';
 import '../../../../base/constant.dart';
@@ -202,7 +201,7 @@ class _TestDetailScreenState extends State<TestDetailScreen> {
                                 'MR will pay',
                                 Constant.getRuppee(
                                     labPrice.priceBefore! - labPrice.price!),
-                                ''),
+                                '', color: accentColor),
                             // buildTaxRow('Price', Constant.getRuppee(labPrice.price),
                             //     Constant.getRuppee(labPrice.priceBefore)),
                             const SizedBox(
@@ -310,18 +309,18 @@ class _TestDetailScreenState extends State<TestDetailScreen> {
   }
 }
 
-Row buildTaxRow(String title, String rate, String oldRate, {FontWeight? fontWeight, Color? color}) {
+Row buildTaxRow(String title, String rate, String oldRate, {FontWeight? fontWeight, Color? color, double? fontSize}) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
       getCustomFont(title, 17.sp, color ?? Colors.black, 1, fontWeight:fontWeight ?? FontWeight.w500),
       Row(
         children: [
-          getCustomFont(oldRate, 17.sp, color ?? greyFontColor, 1,
+          getCustomFont(oldRate, fontSize ?? 17.sp, color ?? greyFontColor, 1,
               fontWeight: fontWeight ?? FontWeight.w300,
               decoration: TextDecoration.lineThrough),
           getHorSpace(10.h),
-          getCustomFont(rate, 17.sp, color ?? Colors.black, 1,
+          getCustomFont(rate, fontSize ?? 17.sp, color ?? Colors.black, 1,
               fontWeight: fontWeight ?? FontWeight.w500),
           getHorSpace(10.h),
         ],

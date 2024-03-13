@@ -9,6 +9,7 @@ import 'package:flutter_cashfree_pg_sdk/api/cftheme/cftheme.dart';
 import 'package:flutter_cashfree_pg_sdk/utils/cfenums.dart';
 import 'package:flutter_cashfree_pg_sdk/utils/cfexceptions.dart';
 import 'package:get/get.dart';
+import 'package:get/get_rx/get_rx.dart';
 import 'package:lab_test_app/data/app_urls.dart';
 import 'package:lab_test_app/data/response_status.dart';
 import 'package:lab_test_app/domain/model/CommonModel.dart';
@@ -18,6 +19,7 @@ import 'package:lab_test_app/domain/model/auth/user.dart';
 import 'package:lab_test_app/domain/model/Lab.dart';
 import 'package:lab_test_app/domain/model/specialist.dart';
 import 'package:lab_test_app/presentation/app/routes/app_routes.dart';
+import 'package:lab_test_app/presentation/app/screen/lists/labDetail/lab_controller.dart';
 import 'package:lab_test_app/presentation/base/constant.dart';
 import 'package:lab_test_app/presentation/base/pref_data.dart';
 import 'package:lab_test_app/presentation/base/view_utils.dart';
@@ -32,7 +34,8 @@ class AddBookingController extends GetxController {
 
   var test = Rxn<Tests>();
   var lab = Rxn<Lab>();
-  var selectedLab = Rxn<PriceList>();
+  var priceList = Rxn<PriceList>();
+  RxBool multiTests = false.obs;
   RxInt selectedPos = 0.obs;
   RxInt testAdminCommission = 0.obs;
 
@@ -91,10 +94,28 @@ class AddBookingController extends GetxController {
   }
 
   addBooking() async {
+      LabController labController = Get.find();
+    var testId = "";
+    var labId = "";
+    num multiTestLabPrice = 0;
+    if (multiTests.isTrue) {
+      labId = labController.lab.value!.id!;
+
+      List<String> testIds = [];
+      for (var test in labController.selectedTests) {
+        testIds.add(test.test!.id!);
+        multiTestLabPrice += test.price!;
+      }
+      testId = testIds.length > 1 ? testIds.join(",") : testIds.first;
+    }else{
+      testId = test.value!.id!;
+      labId = priceList.value?.labId ?? lab.value!.id!;
+    }
+
     var ids = specialist.value == null
         ? {
-            "lab": selectedLab.value?.labId ?? lab.value!.id!,
-            "test": test.value!.id!,
+            "lab": labId,
+            "test": testId,
           }
         : {'specialist': specialist.value!.id};
 
@@ -104,9 +125,11 @@ class AddBookingController extends GetxController {
       "tax": '5',
       'price': (specialist.value != null)
           ? specialist.value!.price!
-          : (selectedLab.value != null)
-              ? selectedLab.value!.price
-              : test.value!.price!,
+          : (priceList.value != null)
+              ? priceList.value!.price
+              : multiTests.isTrue
+          ? multiTestLabPrice
+          :test.value!.price!,
       'patientName': user.value?.name ?? "",
       'collectionType': selectedPos.value.toString(),
       'collectionAddress':
@@ -144,13 +167,15 @@ class AddBookingController extends GetxController {
 
   void verifyPayment(String orderId) {
     Constant.printValue("Verify Payment");
-    showSnackbar("Payment Success", "Your payment has been successfully received.");
+    showSnackbar(
+        "Payment Success", "Your payment has been successfully received.");
     addBooking();
   }
 
   void onError(CFErrorResponse errorResponse, String orderId) {
     showSnackbar("Error in payment", errorResponse.getMessage());
-    Constant.printValue("Error while making payment : ${errorResponse.getMessage()}");
+    Constant.printValue(
+        "Error while making payment : ${errorResponse.getMessage()}");
   }
 
   void receivedEvent(String eventName, Map<dynamic, dynamic> metaData) {
@@ -159,7 +184,7 @@ class AddBookingController extends GetxController {
   }
 
   CFSession? createSession(orderId, paymentSessionId) {
-    CFEnvironment environment = CFEnvironment.PRODUCTION;
+    CFEnvironment environment = CFEnvironment.SANDBOX;
     // Constant.printValue("Session id is : $paymentSessionId");
     try {
       var session = CFSessionBuilder()

@@ -110,7 +110,7 @@ class _TestReportScreenState extends State<TestReportScreen> {
           ),
           child: Center(
               child: getNetworkImage(
-                  "${AppUrls.imageBaseUrl}${report!.test!.thumb!}",
+                  "${AppUrls.imageBaseUrl}${report!.testList!.thumb!}",
                   height: 50.h,
                   width: 50.h)),
         ),
@@ -118,7 +118,7 @@ class _TestReportScreenState extends State<TestReportScreen> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            getCustomFont(report.test!.title!, 22.sp, Colors.black, 1,
+            getCustomFont(report.testList!.title!, 22.sp, Colors.black, 1,
                 fontWeight: FontWeight.w700),
             getVerSpace(6.h),
             getCustomFont(report.bookingId!, 15.sp, greyFontColor, 1,

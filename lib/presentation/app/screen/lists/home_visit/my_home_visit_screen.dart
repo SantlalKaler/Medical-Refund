@@ -73,7 +73,7 @@ class _MyHomeVisitScreenState extends State<MyHomeVisitScreen> {
 
 Widget buildVisitList(List<Result> bookings, BuildContext context,
     {bool isSpecialist = false}) {
-  return (bookings.isEmpty )
+  return (bookings.isEmpty)
       ? Center(child: buildNoDataWidget(context))
       : Expanded(
           child: ListView.builder(
@@ -115,7 +115,8 @@ Widget buildVisitList(List<Result> bookings, BuildContext context,
                           isSpecialist
                               ? user.mobile ?? ""
                               : lab?.officeAddress ??
-                                  specialist?.officeAddress??"",
+                                  specialist?.officeAddress ??
+                                  "",
                           15.sp,
                           Colors.black,
                           2,
@@ -126,12 +127,23 @@ Widget buildVisitList(List<Result> bookings, BuildContext context,
                           homeVisit.collectionSlot!),
                       getVerSpace(20.h),
                       buildPaymentInfoRow(
-                        homeVisit.price.toString(),
-                        homeVisit.paymentGateway ?? ""
+                          homeVisit.price.toString(),
+                          (homeVisit.paymentGateway == null ||
+                                  homeVisit.paymentGateway!.isEmpty)
+                              ? "Payment Pending"
+                              : "Payment Success"),
+                      getVerSpace(20.h),
+                      Row(
+                        children: [
+                          getSvgImage('booking_done.svg',
+                              height: 20.h, width: 20.h),
+                          getHorSpace(4.h),
+                          getCustomFont("Confirmed", 15.sp, accentColor, 1,
+                              fontWeight: FontWeight.w500),
+                        ],
                       ),
                       getVerSpace(20.h),
-                      if(homeVisit.test != null)
-                        showTestInfo(homeVisit.test!)
+                      if (homeVisit.testList != null) showTestInfo(homeVisit.testList!)
                       // buildVisitCompleteButton(context)
                     ],
                   ));
@@ -140,9 +152,14 @@ Widget buildVisitList(List<Result> bookings, BuildContext context,
         );
 }
 
-Widget showTestInfo(Test test){
+Widget showTestInfo(Test test) {
   return Column(
+    mainAxisAlignment: MainAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.start,
     children: [
+      getCustomFont("Test", 16.sp, Colors.black, 2,
+          fontWeight: FontWeight.w700),
+      getVerSpace(10.h),
       Container(
         width: 150,
         alignment: Alignment.center,
@@ -152,13 +169,8 @@ Widget showTestInfo(Test test){
               SmoothRadius(cornerRadius: 22.h, cornerSmoothing: 20.h)),
           color: "FFF4DF".toColor(),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            getCustomFont(test.title ?? '', 18.sp, Colors.black, 3,
-                fontWeight: FontWeight.bold),
-          ],
-        ),
+        child: getCustomFont(test.title ?? '', 18.sp, Colors.black, 3,
+            fontWeight: FontWeight.bold),
       ),
     ],
   );

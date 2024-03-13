@@ -7,7 +7,6 @@ import 'package:lab_test_app/domain/model/Lab.dart';
 import 'package:lab_test_app/domain/model/LabDetailsModel.dart';
 import 'package:lab_test_app/presentation/app/screen/lists/labDetail/lab_controller.dart';
 import 'package:lab_test_app/presentation/base/view_utils.dart';
-import 'package:maps_launcher/maps_launcher.dart';
 
 import '../../../../../data/response_status.dart';
 import '../../../../base/color_data.dart';
@@ -76,91 +75,39 @@ class _LabDetailScreenState extends State<LabDetailScreen> {
                                   }, '',
                                       isDivider: false,
                                       iconColor: Colors.white),
-                                  // Align(alignment: Alignment.centerLeft,child: getBackIcon((){},color: Colors.white)),
                                   getVerSpace(140.h),
                                   buildAboutLabContainer(controller
                                       .labDetails.value!.result!.detail!),
-                                  /*getVerSpace(30.h),
-                              Row(
-                                children: [
-                                  getCircleImage(
-                                      context, 'specialist1.png', 68.h),
-                                  getHorSpace(12.h),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                      children: [
-                                        getCustomFont('Dr. Vina Belgium',
-                                            16.sp, Colors.black, 1,
-                                            fontWeight: FontWeight.w700),
-                                        getVerSpace(3.h),
-                                        getCustomFont('Owner', 15.sp,
-                                            greyFontColor, 1,
-                                            fontWeight: FontWeight.w400),
-                                      ],
-                                    ),
-                                  ),
-                                  InkWell(
-                                    onTap: () {
-                                      Constant.sendToNext(
-                                          context, Routes.chatScreenRoute);
-                                    },
-                                    child: Container(
-                                      height: 51.h,
-                                      width: 51.h,
-                                      decoration: BoxDecoration(
-                                        color: fillColor,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: Center(
-                                          child: getSvgImage('chat.svg',
-                                              height: 24.h,
-                                              width: 24.h,
-                                              color: accentColor)),
-                                    ),
-                                  )
-                                ],
-                              ),*/
                                   getVerSpace(20.h),
                                   buildTitleRow('About', () {
                                     Constant.sendToNext(
                                         context, Routes.aboutLabScreenRoute);
                                   }),
-                                  getVerSpace(20.h),
-                                  buildTitleRow('Location', () {
-                                    var lat = controller
-                                        .labDetails
-                                        .value!
-                                        .result!
-                                        .detail!
-                                        .position!
-                                        .coordinates![0];
-                                    var lng = controller
-                                        .labDetails
-                                        .value!
-                                        .result!
-                                        .detail!
-                                        .position!
-                                        .coordinates![1];
-                                    if (lat == 0 || lng == 0) {
-                                      showSnackbar(
-                                          "Message", "Invalid location");
-                                      return;
-                                    }
-                                    MapsLauncher.launchCoordinates(lat, lng);
-                                  }),
-                                  getVerSpace(20.h),
-                                  // buildTitleRow('Reviews', () {
-                                  //   Constant.sendToNext(
-                                  //       context, Routes.labReviewsScreenRoute,
-                                  //       arguments: {
-                                  //         'lab': controller.lab.value!.id
-                                  //       });
-                                  // }),
-                                  // getVerSpace(20.h),
                                   buildTestsListView(),
-                                  getVerSpace(30.h),
+                                  getVerSpace(20.h),
+                                  getButton(
+                                    context,
+                                    accentColor,
+                                    'Select Lab to proceed',
+                                    Colors.white,
+                                    () {
+                                      if (controller.selectedTests.isEmpty) {
+                                        showSnackbar("Warning!",
+                                            "Please select any test to continue");
+                                      } else {
+                                        Constant.moveToNext(
+                                            Routes.addBookingScreenRoute,
+                                            arguments: {
+                                              'multiTests':true,
+                                            });
+                                      }
+                                    },
+                                    18.sp,
+                                    weight: FontWeight.w700,
+                                    buttonHeight: 60.h,
+                                    buttonWidth: double.infinity,
+                                    borderRadius: BorderRadius.circular(22.h),
+                                  )
                                 ],
                               ).marginSymmetric(horizontal: 20.h),
                             ],
@@ -293,28 +240,48 @@ class _LabDetailScreenState extends State<LabDetailScreen> {
     if (context.isTablet) {
       crossCount = 4;
     }
+    var height = MediaQuery.of(context).size.height;
+    var width = MediaQuery.of(context).size.width;
 
     final random = Random();
 
-    return GridView.count(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: crossCount,
-      crossAxisSpacing: margin,
-      mainAxisSpacing: margin,
-      childAspectRatio: 0.90,
-      children: List.generate(controller.tests.length, (index) {
-        Tests test = controller.tests[index];
+    return GetBuilder(
+        init: LabController(),
+        builder: (controller) {
+          return GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: crossCount,
+            crossAxisSpacing: margin,
+            mainAxisSpacing: margin,
+            childAspectRatio: height / (width * 2.6),
+            children: List.generate(controller.tests.length, (index) {
+              Tests test = controller.tests[index];
 
-        return singleTestView(test, () {
-          Constant.moveToNext(Routes.addBookingScreenRoute, arguments: {
-            'lab': controller.lab.value,
-            'test': test,
-            'adminCommission': test.adminCommission
-          });
-        }, colorList[random.nextInt(colorList.length)].toColor(),
-            showPrice: true);
-      }),
-    );
+              return singleTestView(test, () {
+                controller.selectTest(test);
+              }, colorList[random.nextInt(colorList.length)].toColor(),
+                  showPrice: true, testSelected: isTestSelected(test));
+            }),
+          );
+        });
+  }
+
+  bool isTestSelected(Tests test) {
+    var isSelected = false;
+    for (var selectedTest in controller.selectedTests) {
+      /* Constant.printValue("Selected test id : ${selectedTest.id}\n"
+          "Test id : ${test.id}");*/
+      if (selectedTest.id == test.id) {
+        isSelected = true;
+        break;
+      } else {
+        isSelected = false;
+      }
+    }
+    /* Constant.printValue(
+        "${test.test?.title} is Selected $isSelected\nSelecte test : ${controller.selectedTests.length}");
+   */
+    return isSelected;
   }
 }

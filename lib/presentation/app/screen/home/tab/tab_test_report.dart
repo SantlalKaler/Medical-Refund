@@ -57,7 +57,7 @@ class _TabTestReportsState extends State<TabTestReports> {
     return Expanded(
       child: (controller.bookings.isEmpty)
           ? buildNoTestReportView(context)
-          : (controller.bookings[0].test == null &&
+          : (controller.bookings[0].testList == null &&
                   controller.bookings[0].labs == null &&
                   controller.bookings[0].specialist == null)
               ? buildNoTestReportView(context)
@@ -147,7 +147,7 @@ class _TabTestReportsState extends State<TabTestReports> {
     List<Result> testReports = [];
 
     for (var report in latestReportList) {
-      if (report.test != null) {
+      if (report.testList != null) {
         testReports.add(report);
       }
     }
@@ -180,7 +180,7 @@ class _TabTestReportsState extends State<TabTestReports> {
                             getHorSpace(12.h),
                             Expanded(
                                 child: getCustomFont(
-                                    report.test!.title!, 18.sp, Colors.black, 1,
+                                    report.testList!.title!, 18.sp, Colors.black, 1,
                                     fontWeight: FontWeight.w700)),
                             /*buildPopupMenuButton(
                         (value) {
@@ -359,7 +359,7 @@ Row buildPaymentInfoRow(String price, String bookingInfo) {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            getSvgImage('booking_done.svg', height: 20.h, width: 20.h),
+            getSvgImage('card.svg', height: 20.h, width: 20.h),
             getHorSpace(4.h),
             getCustomFont(bookingInfo, 15.sp, greyFontColor, 1,
                 fontWeight: FontWeight.w500),

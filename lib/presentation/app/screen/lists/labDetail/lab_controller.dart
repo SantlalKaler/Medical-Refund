@@ -17,6 +17,7 @@ class LabController extends GetxController {
   var lat = Rxn<double>();
   var lng = Rxn<double>();
   RxList<Tests> tests = <Tests>[].obs;
+  RxList<Tests> selectedTests = RxList();
 
   RxBool loading = false.obs;
   API api = API();
@@ -24,6 +25,29 @@ class LabController extends GetxController {
   setLoading() {
     loading.value = !loading.value;
     update();
+  }
+
+  selectTest(Tests test) {
+
+    if (selectedTests.isEmpty) {
+      selectedTests.add(test);
+    } else {
+      bool testFound = false;
+      for (var tes in selectedTests) {
+        if (tes.id == test.id) {
+          testFound = true;
+          break;
+        }
+      }
+
+      if (testFound) {
+        selectedTests.remove(test);
+      } else {
+        selectedTests.add(test);
+      }
+    }
+    update();
+    Constant.printValue("Selected test length : ${selectedTests.length}");
   }
 
   getLabDetails(String labId) async {

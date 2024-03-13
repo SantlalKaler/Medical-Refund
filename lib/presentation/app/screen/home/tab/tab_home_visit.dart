@@ -76,7 +76,7 @@ class _TabHomeVisitState extends State<TabHomeVisit> {
     } else {
       return bookings.isEmpty
           ? buildNoDataWidget(context)
-          : (bookings[0].labs == null || bookings[0].test == null)
+          : (bookings[0].labs == null || bookings[0].testList == null)
               ? buildNoDataWidget(context)
               : buildVisitListTabHome();
     }
@@ -90,7 +90,7 @@ class _TabHomeVisitState extends State<TabHomeVisit> {
         itemBuilder: (context, index) {
           Result homeVisit = homeVisitList[index];
           var lab = homeVisit.labs!;
-          var test = homeVisit.test!;
+          var test = homeVisit.testList!;
           return getShadowDefaultContainer(
               margin: EdgeInsets.symmetric(horizontal: 20.h, vertical: 10.h),
               padding: EdgeInsets.all(20.h),

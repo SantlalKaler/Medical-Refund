@@ -165,7 +165,7 @@ Expanded buildBookingListView(List<Result> bookings) {
                   children: [
                     getCustomFont("Test", 18.sp, Colors.black, 1,
                         fontWeight: FontWeight.w500),
-                    getCustomFont(booking.test!.title!, 18.sp, Colors.grey, 1,
+                    getCustomFont(booking.testList!.title!, 18.sp, Colors.grey, 1,
                         fontWeight: FontWeight.w400),
                   ],
                 ),

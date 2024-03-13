@@ -303,7 +303,7 @@ class Result {
     User? users,
     Lab? labs,
     Specialist? specialist,
-    Test? test,
+    Test? testList,
     num? tax,
     num? price,
     String? patientName,
@@ -324,7 +324,7 @@ class Result {
     _users = users;
     _labs = labs;
     _specialist = specialist;
-    _test = test;
+    _testList = testList;
     _tax = tax;
     _price = price;
     _patientName = patientName;
@@ -347,7 +347,7 @@ class Result {
     _users = json['users'] != null ? User.fromJson(json['users']) : null;
     _labs = json['labs'] != null ? Lab.fromJson(json['labs']) : null;
     _specialist = json['specialist'] != null ? Specialist.fromJson(json['specialist']) : null;
-    _test = json['test'] != null ? Test.fromJson(json['test']) : null;
+    _testList = json['test'] != null ? Test.fromJson(json['test']) : null;
     _tax = json['tax'];
     _price = json['price'];
     _patientName = json['patientName'];
@@ -369,7 +369,7 @@ class Result {
   User? _users;
   Lab? _labs;
   Specialist? _specialist;
-  Test? _test;
+  Test? _testList;
   num? _tax;
   num? _price;
   String? _patientName;
@@ -391,7 +391,7 @@ class Result {
     User? users,
     Lab? labs,
     Specialist? specialist,
-    Test? test,
+    Test? testList,
     num? tax,
     num? price,
     String? patientName,
@@ -413,7 +413,7 @@ class Result {
         users: users ?? _users,
         labs: labs ?? _labs,
         specialist: specialist ?? _specialist,
-        test: test ?? _test,
+        testList: testList ?? _testList,
         tax: tax ?? _tax,
         price: price ?? _price,
         patientName: patientName ?? _patientName,
@@ -439,7 +439,7 @@ class Result {
   Lab? get labs => _labs;
   Specialist? get specialist => _specialist;
 
-  Test? get test => _test;
+  Test? get testList => _testList;
 
   num? get tax => _tax;
 
@@ -482,8 +482,8 @@ class Result {
     if (_specialist != null) {
       map['specialist'] = _specialist?.toJson();
     }
-    if (_test != null) {
-      map['test'] = _test?.toJson();
+    if (_testList != null) {
+      map['test'] = _testList?.toJson();
     }
     map['tax'] = _tax;
     map['price'] = _price;
