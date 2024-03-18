@@ -13,6 +13,7 @@ class Test {
     String? thumb,
     String? image,
     num? priceBefore,
+    num? bookingPrice,
     num? price,
     num? adminCommission,
     num? active,
@@ -32,6 +33,7 @@ class Test {
     _image = image;
     _priceBefore = priceBefore;
     _price = price;
+    _bookingPrice = bookingPrice;
     _adminCommission = adminCommission;
     _active = active;
     _deleted = deleted;
@@ -49,6 +51,7 @@ class Test {
     _shortDesc = json['shortDesc'];
     _desc = json['desc'];
     _thumb = json['thumb'];
+    _bookingPrice = json['bookingPrice'];
     _image = json['image'];
     _priceBefore = json['priceBefore'];
     _price = json['price'];
@@ -67,6 +70,7 @@ class Test {
   String? _id1;
   String? _shortDesc;
   String? _desc;
+  num? _bookingPrice;
   String? _thumb;
   String? _image;
   num? _priceBefore;
@@ -84,6 +88,7 @@ class Test {
     String? title,
     String? id1,
     String? shortDesc,
+    num? bookingPrice,
     String? desc,
     String? thumb,
     String? image,
@@ -105,6 +110,7 @@ class Test {
         shortDesc: shortDesc ?? _shortDesc,
         desc: desc ?? _desc,
         thumb: thumb ?? _thumb,
+        bookingPrice: bookingPrice ?? _bookingPrice,
         image: image ?? _image,
         priceBefore: priceBefore ?? _priceBefore,
         price: price ?? _price,
@@ -122,6 +128,7 @@ class Test {
   String? get id1 => _id1;
   String? get shortDesc => _shortDesc;
   String? get desc => _desc;
+  num? get bookingPrice => _bookingPrice;
   String? get thumb => _thumb;
   String? get image => _image;
   num? get priceBefore => _priceBefore;
@@ -141,6 +148,7 @@ class Test {
     map['title'] = _title;
     map['id'] = _id1;
     map['shortDesc'] = _shortDesc;
+    map['bookingPrice'] = _bookingPrice;
     map['desc'] = _desc;
     map['thumb'] = _thumb;
     map['image'] = _image;

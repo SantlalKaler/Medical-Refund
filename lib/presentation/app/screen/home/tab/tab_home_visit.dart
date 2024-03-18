@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:lab_test_app/domain/model/BookingModel.dart';
+import 'package:lab_test_app/domain/model/MyBookingResponse.dart';
 import 'package:lab_test_app/presentation/app/screen/home/tab/tab_test_report.dart';
 import 'package:lab_test_app/presentation/app/screen/lists/home_visit/my_home_visit_screen.dart';
+
 import '../../../../base/color_data.dart';
 import '../../../../base/constant.dart';
 import '../../../../base/widget_utils.dart';
@@ -68,7 +69,7 @@ class _TabHomeVisitState extends State<TabHomeVisit> {
   }
 
   Widget bookingListView() {
-    var bookings = controller.bookings;
+    var bookings = controller.myBookings;
     if (controller.isSpecialist.value) {
       return bookings.isEmpty
           ? buildNoDataWidget(context)
@@ -76,21 +77,21 @@ class _TabHomeVisitState extends State<TabHomeVisit> {
     } else {
       return bookings.isEmpty
           ? buildNoDataWidget(context)
-          : (bookings[0].labs == null || bookings[0].testList == null)
+          : (bookings[0].labs == null || bookings[0].test == null)
               ? buildNoDataWidget(context)
               : buildVisitListTabHome();
     }
   }
 
   Expanded buildVisitListTabHome() {
-    var homeVisitList = controller.bookings;
+    var homeVisitList = controller.myBookings;
     return Expanded(
       child: ListView.builder(
         itemCount: homeVisitList.length,
         itemBuilder: (context, index) {
-          Result homeVisit = homeVisitList[index];
+          Booking homeVisit = homeVisitList[index];
           var lab = homeVisit.labs!;
-          var test = homeVisit.testList!;
+          var test = homeVisit.test!;
           return getShadowDefaultContainer(
               margin: EdgeInsets.symmetric(horizontal: 20.h, vertical: 10.h),
               padding: EdgeInsets.all(20.h),
@@ -98,12 +99,6 @@ class _TabHomeVisitState extends State<TabHomeVisit> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  /*Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                     // getSvgImage('menu.svg', height: 24.h, width: 24.h)
-                    ],
-                  ),*/
                   getCustomFont(lab.name!, 16.sp, Colors.black, 1,
                       fontWeight: FontWeight.w700),
                   getVerSpace(3.h),
@@ -112,11 +107,13 @@ class _TabHomeVisitState extends State<TabHomeVisit> {
                   getVerSpace(20.h),
                   getDivider(),
                   getVerSpace(20.h),
-                  getCustomFont(test.title!, 16.sp, Colors.black, 1,
+                  if (homeVisit.test != null && homeVisit.test!.isNotEmpty)
+                    showTestInfoList(context, homeVisit.test!),
+                 /* getCustomFont(test.title!, 16.sp, Colors.black, 1,
                       fontWeight: FontWeight.w700),
                   getVerSpace(3.h),
                   getCustomFont(test.shortDesc!, 15.sp, Colors.black, 1,
-                      fontWeight: FontWeight.w500),
+                      fontWeight: FontWeight.w500),*/
                   getVerSpace(20.h),
                   buildDateTimeRow(
                       Constant.changeDateFormat(homeVisit.collectionDate!),

@@ -56,9 +56,9 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                   init: BookingController(),
                   builder: (controller) => (controller.loading.value)
                       ? showLoading()
-                      : (controller.bookingResponse.value != null)
+                      : (controller.myBookingResponse.value != null)
                           ? buildVisitList(
-                              controller.bookingResponse.value!.result!, context)
+                              controller.myBookings, context)
                           : getEmptyView())
             ],
           ),

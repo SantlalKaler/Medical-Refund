@@ -85,11 +85,12 @@ class PrefData {
   static Future<User?> getUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var userInfo = prefs.getString(user) ?? '';
-    Constant.printValue("Fetch user customer successfully -> \n\n$userInfo");
 
     if (userInfo.isNotEmpty) {
       Map userMap = jsonDecode(userInfo);
       var user = User.fromJson(userMap);
+    Constant.printValue("Fetch user customer successfully -> \n\n$userInfo\n\n"
+        "User is ${user.panNumber}");
       return user;
     }
     return null;

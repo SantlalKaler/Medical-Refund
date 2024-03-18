@@ -87,12 +87,14 @@ class PriceList {
       String? labImage, 
       num? price, 
       num? priceBefore, 
+      num? bookingPrice,
       num? adminCommission,
       String? labId,}){
     _labName = labName;
     _officeAddress = officeAddress;
     _labImage = labImage;
     _price = price;
+    _bookingPrice = bookingPrice;
     _priceBefore = priceBefore;
     _adminCommission = adminCommission;
     _labId = labId;
@@ -103,6 +105,7 @@ class PriceList {
     _officeAddress = json['officeAddress'];
     _labImage = json['labImage'];
     _price = json['price'];
+    _bookingPrice = json['bookingPrice'];
     _priceBefore = json['priceBefore'];
     _adminCommission = json['adminCommission'];
     _labId = json['labId'];
@@ -111,6 +114,7 @@ class PriceList {
   String? _officeAddress;
   String? _labImage;
   num? _price;
+  num? _bookingPrice;
   num? _priceBefore;
   num? _adminCommission;
   String? _labId;
@@ -125,6 +129,7 @@ PriceList copyWith({  String? labName,
   officeAddress: officeAddress ?? _officeAddress,
   labImage: labImage ?? _labImage,
   price: price ?? _price,
+  bookingPrice: bookingPrice ?? _bookingPrice,
   priceBefore: priceBefore ?? _priceBefore,
   adminCommission: adminCommission ?? _adminCommission,
   labId: labId ?? _labId,
@@ -133,6 +138,7 @@ PriceList copyWith({  String? labName,
   String? get officeAddress => _officeAddress;
   String? get labImage => _labImage;
   num? get price => _price;
+  num? get bookingPrice => _bookingPrice;
   num? get priceBefore => _priceBefore;
   num? get adminCommission => _adminCommission;
   String? get labId => _labId;
@@ -143,6 +149,7 @@ PriceList copyWith({  String? labName,
     map['officeAddress'] = _officeAddress;
     map['labImage'] = _labImage;
     map['price'] = _price;
+    map['bookingPrice'] = _bookingPrice;
     map['priceBefore'] = _priceBefore;
     map['adminCommission'] = _adminCommission;
     map['labId'] = _labId;

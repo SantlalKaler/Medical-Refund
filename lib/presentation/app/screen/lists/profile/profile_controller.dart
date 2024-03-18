@@ -24,6 +24,7 @@ class ProfileController extends GetxController {
   //for edit profile screen
   final nameController = TextEditingController().obs;
   final emailController = TextEditingController().obs;
+  final panNumberController = TextEditingController().obs;
   final phoneController = TextEditingController().obs;
   final birthController = TextEditingController().obs;
   final educationController = TextEditingController().obs;
@@ -38,14 +39,22 @@ class ProfileController extends GetxController {
   final city = Rxn<Result>();
   final specialist = Rxn<Specialist>();
   final cities = Rxn<CityModel>();
-  RxString picName = "".obs;
-  RxString picPath = "".obs;
+  RxString profilePicName = "".obs;
+  RxString profilePicPath = "".obs;
+  RxString panPicName = "".obs;
+  RxString panPicPath = "".obs;
   RxBool isSpecialist = false.obs;
   RxBool loading = false.obs;
 
-  setPicNameNPath(name, path) {
-    picName.value = name;
-    picPath.value = path;
+  setProfilePicNameNPath(name, path) {
+    profilePicName.value = name;
+    profilePicPath.value = path;
+    update();
+  }
+
+  setPanPicNameNPath(name, path) {
+    panPicName.value = name;
+    panPicPath.value = path;
     update();
   }
 
@@ -61,7 +70,8 @@ class ProfileController extends GetxController {
       Constant.printValue(specialist.value);
     } else {
       user.value = await PrefData.getUser();
-      Constant.printValue(user.value);
+      Constant.printValue(
+          "user found and user pan is ${user.value?.panNumber}");
     }
     update();
     fillValue();
@@ -98,8 +108,7 @@ class ProfileController extends GetxController {
       getCityName(userSpecialist.city!);
       nameController.value.text = userSpecialist.name ?? "";
       emailController.value.text = "";
-      priceBeforeController.value.text =
-          userSpecialist.priceBefore.toString();
+      priceBeforeController.value.text = userSpecialist.priceBefore.toString();
       addressController.value.text = userSpecialist.officeAddress ?? "";
       descController.value.text = userSpecialist.desc ?? "";
       totalPatientsController.value.text = userSpecialist.totalPatients ?? "";
@@ -110,6 +119,7 @@ class ProfileController extends GetxController {
       nameController.value.text = user.value!.name!;
       emailController.value.text = user.value!.email!;
       phoneController.value.text = user.value!.mobile!;
+      panNumberController.value.text = user.value!.panNumber ?? "";
       birthController.value.text =
           Constant.changeDateFormat(user.value!.dobDate!);
     }
@@ -134,7 +144,7 @@ class ProfileController extends GetxController {
           educationController.value.text.isEmpty ||
           priceController.value.text.isEmpty) {
         showSnackbar("Alert", "Fill all data");
-      } else if (picPath.value.isNotEmpty) {
+      } else if (profilePicPath.value.isNotEmpty) {
         updateDP();
       } else {
         updateProfile();
@@ -144,7 +154,9 @@ class ProfileController extends GetxController {
           birthController.value.text.isEmpty ||
           emailController.value.text.isEmpty) {
         showSnackbar("Alert", "Fill all data");
-      } else if (picPath.value.isNotEmpty) {
+      } else if (panPicPath.value.isNotEmpty) {
+        updatePan();
+      } else if (profilePicPath.value.isNotEmpty) {
         updateDP();
       } else {
         updateProfile();
@@ -157,26 +169,56 @@ class ProfileController extends GetxController {
     dio.FormData data = dio.FormData.fromMap(
       {
         'id': isSpecialist.value ? specialist.value?.id : user.value?.id,
-        "image": picPath.value.isEmpty
+        "image": profilePicPath.value.isEmpty
             ? user.value?.image.toString()
-            : await dio.MultipartFile.fromFile(picPath.value,
-                filename: picPath.value.split('/').last,
+            : await dio.MultipartFile.fromFile(profilePicPath.value,
+                filename: profilePicPath.value.split('/').last,
                 contentType: MediaType('image', 'jpeg')),
       },
     );
-    isLoading();
 
     //Constant.printValue("form data ${data.files.first.value.contentType}");
 
     var res = await api.postRequest(
         isSpecialist.value ? AppUrls.specialistUpdateDp : AppUrls.updateDp,
         data);
+    isLoading();
     var updateDp = UpdateDpModel.fromJson(res);
     showSnackbar("Message", updateDp.message);
 
     if (updateDp.status == Status.success.name) {
       updateProfile();
     }
+  }
+
+  updatePan() async {
+    isLoading();
+    dio.FormData data = dio.FormData.fromMap(
+      {
+        'id': user.value?.id,
+        "image": panPicPath.value.isEmpty
+            ? user.value?.panImage.toString()
+            : await dio.MultipartFile.fromFile(panPicPath.value,
+                filename: panPicPath.value.split('/').last,
+                contentType: MediaType('image', 'jpeg')),
+      },
+    );
+
+    var res = await api.postRequest(AppUrls.updatePan, data);
+    isLoading();
+    if (res != null) {
+      showSnackbar("Message", res['message'] ?? "");
+      if(res['status'] == 'success') {
+        if (profilePicPath.value.isNotEmpty) {
+          updateDP();
+        }else{
+          updateProfile();
+        }
+      }
+    } else {
+      showSnackbar("Error", "Image is too large.");
+    }
+
   }
 
   updateProfile() async {
@@ -201,6 +243,7 @@ class ProfileController extends GetxController {
                 upload: true),
             "name": nameController.value.text,
             "email": emailController.value.text,
+            "panNumber": panNumberController.value.text
           };
     var res = await api.postRequest(
         isSpecialist.value

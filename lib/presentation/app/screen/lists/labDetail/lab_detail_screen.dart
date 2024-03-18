@@ -83,6 +83,8 @@ class _LabDetailScreenState extends State<LabDetailScreen> {
                                     Constant.sendToNext(
                                         context, Routes.aboutLabScreenRoute);
                                   }),
+                                  getVerSpace(20.h),
+                                  buildTitleRow("${controller.lab.value?.officeAddress }"?? "Address", () {}),
                                   buildTestsListView(),
                                   getVerSpace(20.h),
                                   getButton(
@@ -261,7 +263,7 @@ class _LabDetailScreenState extends State<LabDetailScreen> {
               return singleTestView(test, () {
                 controller.selectTest(test);
               }, colorList[random.nextInt(colorList.length)].toColor(),
-                  showPrice: true, testSelected: isTestSelected(test));
+                  showPrice: true, testSelected: isTestSelected(test), testSelectable: true);
             }),
           );
         });

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:lab_test_app/domain/model/BookingModel.dart';
+import 'package:lab_test_app/domain/model/MyBookingResponse.dart';
 import 'package:lab_test_app/presentation/base/view_utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -55,57 +55,13 @@ class _TabTestReportsState extends State<TabTestReports> {
 
   Expanded buildReportView(BuildContext context, BookingController controller) {
     return Expanded(
-      child: (controller.bookings.isEmpty)
+      child: (controller.myBookings.isEmpty)
           ? buildNoTestReportView(context)
-          : (controller.bookings[0].testList == null &&
-                  controller.bookings[0].labs == null &&
-                  controller.bookings[0].specialist == null)
+          : (controller.myBookings[0].test == null &&
+                  controller.myBookings[0].labs == null &&
+                  controller.myBookings[0].specialist == null)
               ? buildNoTestReportView(context)
-              : buildTestReportView(context, controller),
-    );
-  }
-
-  ListView buildTestReportView(
-      BuildContext context, BookingController controller) {
-    return ListView(
-      physics: const NeverScrollableScrollPhysics(),
-      children: [
-        /* Container(
-          height: 129.h,
-          width: double.infinity,
-          margin: EdgeInsets.symmetric(horizontal: 20.h),
-          decoration: BoxDecoration(
-            color: lightAccentColor,
-            borderRadius: BorderRadius.all(
-              Radius.circular(22.h),
-            ),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    getCustomFont('Heart Rate', 17.sp, Colors.black, 1,
-                        fontWeight: FontWeight.w500),
-                    getVerSpace(14.h),
-                    getRichText('92 ', Colors.black, FontWeight.w700, 35.h,
-                        'bpm', Colors.black, FontWeight.w700, 22.h)
-                  ],
-                ).paddingAll(20.h),
-              ),
-              getSvgImage('Vector.svg', width: 141.h).paddingAll(20.h)
-            ],
-          ),
-        ),
-        getVerSpace(20.h),
-        buildContainerRow(),
-        getVerSpace(20.h),*/
-        //buildViewAllView(context, 'Latest Report', () {}),
-        buildLatestReportListView(controller),
-        getVerSpace(100.h),
-      ],
+              : buildLatestReportListView(controller),
     );
   }
 
@@ -143,11 +99,11 @@ class _TabTestReportsState extends State<TabTestReports> {
   }
 
   Widget buildLatestReportListView(BookingController controller) {
-    List<Result> latestReportList = controller.bookings;
-    List<Result> testReports = [];
+    List<Booking> latestReportList = controller.myBookings;
+    List<Booking> testReports = [];
 
     for (var report in latestReportList) {
-      if (report.testList != null) {
+      if (report.test != null && report.test!.isNotEmpty) {
         testReports.add(report);
       }
     }
@@ -158,10 +114,10 @@ class _TabTestReportsState extends State<TabTestReports> {
             shrinkWrap: true,
             itemCount: testReports.length,
             itemBuilder: (context, index) {
-              Result report = testReports[index];
+              Booking report = testReports[index];
               return InkWell(
                 onTap: () {
-                  controller.setSelectedText(index);
+                  //controller.setSelectedText(index);
                   //Constant.sendToNext(context, Routes.testReportScreenRoute);
                 },
                 child: getShadowDefaultContainer(
@@ -180,7 +136,10 @@ class _TabTestReportsState extends State<TabTestReports> {
                             getHorSpace(12.h),
                             Expanded(
                                 child: getCustomFont(
-                                    report.testList!.title!, 18.sp, Colors.black, 1,
+                                    report.test?[0].title ?? "",
+                                    18.sp,
+                                    Colors.black,
+                                    1,
                                     fontWeight: FontWeight.w700)),
                             /*buildPopupMenuButton(
                         (value) {
@@ -214,12 +173,12 @@ class _TabTestReportsState extends State<TabTestReports> {
                                 ? getEmptyView()
                                 : InkWell(
                                     onTap: () {
-                                      launchPDF(
-                                          "${controller.bookingResponse.value!.pdfBaseURL}${report.report}");
+                                      openUrl(
+                                          "${controller.myBookingResponse.value!.pdfBaseURL}${report.report}");
                                     },
                                     child: getSvgImage('download.svg',
                                         width: 24.h, height: 24.h),
-                                  ),
+                                  ).marginSymmetric(horizontal: 20),
                           ],
                         ),
                       ],
@@ -230,11 +189,24 @@ class _TabTestReportsState extends State<TabTestReports> {
   }
 
   void launchPDF(url) async {
-    if (await canLaunchUrl(Uri.parse(url))) {
+    Constant.printValue("Url is $url");
+    if (await launchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url));
     } else {
       showSnackbar("Message", "Could not launch PDF");
       throw 'Could not launch PDF';
+    }
+  }
+
+  openUrl(String url) async {
+    Constant.printValue("Url : $url");
+    if (await launchUrl(Uri.parse(url))) {
+      await launchUrl(
+        Uri.parse(url),
+        mode: LaunchMode.externalApplication,
+      );
+    } else {
+      throw 'Could not open the map.';
     }
   }
 
@@ -342,7 +314,7 @@ Row buildDateTimeRow(String date, String time) {
   );
 }
 
-Row buildPaymentInfoRow(String price, String bookingInfo) {
+Row buildPaymentInfoRow(String bookingPrice, String totalPrice) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
@@ -350,18 +322,44 @@ Row buildPaymentInfoRow(String price, String bookingInfo) {
         children: [
           getSvgImage('wallet_outline.svg', height: 20.h, width: 20.h),
           getHorSpace(4.h),
-          getCustomFont(price, 15.sp, greyFontColor, 1,
+          getCustomFont(bookingPrice, 15.sp, greyFontColor, 1,
               fontWeight: FontWeight.w500),
         ],
       ),
-      if (bookingInfo.isNotEmpty)
+      Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          getSvgImage('wallet_outline.svg', height: 20.h, width: 20.h),
+          getHorSpace(4.h),
+          getCustomFont(totalPrice, 15.sp, greyFontColor, 1,
+              fontWeight: FontWeight.w500),
+        ],
+      ),
+    ],
+  );
+}
+
+Row buildPaymentStatusRow(String paymentStatus, String bookingStatus) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      Row(
+        children: [
+          getSvgImage('booking_done.svg', height: 20.h, width: 20.h),
+          getHorSpace(4.h),
+          getCustomFont(bookingStatus, 15.sp, accentColor, 1,
+              fontWeight: FontWeight.w500),
+        ],
+      ),
+      if (paymentStatus.isNotEmpty)
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             getSvgImage('card.svg', height: 20.h, width: 20.h),
             getHorSpace(4.h),
-            getCustomFont(bookingInfo, 15.sp, greyFontColor, 1,
+            getCustomFont(paymentStatus, 15.sp, greyFontColor, 1,
                 fontWeight: FontWeight.w500),
           ],
         ),

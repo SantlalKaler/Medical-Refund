@@ -1,13 +1,17 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:lab_test_app/presentation/app/screen/lists/profile/profile_controller.dart';
+import 'package:lab_test_app/presentation/base/view_utils.dart';
 
 import '../../../../../data/app_urls.dart';
 import '../../../../base/color_data.dart';
 import '../../../../base/constant.dart';
 import '../../../../base/widget_utils.dart';
+import 'my_profile_screen.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({Key? key}) : super(key: key);
@@ -168,6 +172,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         profileController.changeDob(dob);
                       });
                     }),
+                    getVerSpace(20.h),
+                    getDefaultTextFiledWithLabel(
+                      context,
+                      "Enter pan number",
+                      length: 10,
+                      profileController.panNumberController.value,
+                      height: 60.h,
+                      keyboardType: TextInputType.text,
+                    ),
+                    getVerSpace(20.h),
+                    buildRow('PAN Image size should be less than 5 MB', ""),
+                    getVerSpace(20.h),
+                    getPanCell(context)
                   ],
                 )
               : const SizedBox(),
@@ -316,12 +333,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           Positioned.fill(
             child: Align(
               alignment: Alignment.topLeft,
-              child: profileController.picName.isEmpty
+              child: profileController.profilePicName.isEmpty
                   ? getCircularNetworkImage(context, 92.h, 92.h, 22.h,
                       "${AppUrls.imageBaseUrl}${profileController.isSpecialist.value ? profileController.specialist.value?.image : profileController.user.value!.image!}",
-                      boxFit: BoxFit.fill)
+                      boxFit: BoxFit.fill, placeHolder: "profile_active.svg")
                   : getCircularFileImage(context, 92.h, 92.h, 22.h,
-                      profileController.picPath.value,
+                      profileController.profilePicPath.value,
                       boxFit: BoxFit.fill),
             ),
           ),
@@ -358,14 +375,86 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     ).marginSymmetric(horizontal: 20.h);
   }
 
-  _profilePic() async {
+  getPanCell(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 150,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: profileController.panPicName.isEmpty
+                  ? getCircularNetworkImage(
+                      context,
+                      double.infinity,
+                      150.h,
+                      22.h,
+                      "${AppUrls.imageBaseUrl}${profileController.user.value!.panImage!}",
+                      boxFit: BoxFit.fill)
+                  : getCircularFileImage(context, double.infinity, 150.h, 22.h,
+                      profileController.panPicPath.value,
+                      boxFit: BoxFit.fill),
+            ),
+          ),
+          Positioned.fill(
+            child: Align(
+              alignment: Alignment.topRight,
+              child: InkWell(
+                onTap: () {
+                  _profilePic(isProfilePic: false);
+                },
+                child: Container(
+                  width: 36.h,
+                  height: 36.h,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0x289a90b8),
+                        blurRadius: 32.h,
+                        offset: const Offset(0, 9),
+                      ),
+                    ],
+                    color: Colors.white,
+                  ),
+                  child: Center(
+                    child: getSvgImage('edit.svg', height: 24.h, width: 24.h),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ).marginSymmetric(horizontal: 20.h);
+  }
+
+  _profilePic({bool isProfilePic = true}) async {
     final result = await FilePicker.platform
         .pickFiles(type: FileType.custom, allowedExtensions: ['jpg', 'png']);
 
     if (result == null) return;
-    profileController.setPicNameNPath(
-        result.files.first.name, result.files.first.path!);
-    print(
+    if (isProfilePic) {
+      profileController.setProfilePicNameNPath(
+          result.files.first.name, result.files.first.path!);
+    } else {
+      File file = File(result.files.single.path!);
+      int fileSizeInBytes = await file.length(); // Get file size in bytes
+      double fileSizeInKB = fileSizeInBytes / 1024; // Convert bytes to KB
+      double fileSizeInMB = fileSizeInKB / 1024; //
+
+      Constant.printValue("File size : $fileSizeInMB");
+
+      if (fileSizeInMB > 5) {
+        showSnackbar("Warning!",
+            "Selected file is too large (exceeds 5 MB). Please choose a smaller file.");
+      } else {
+        profileController.setPanPicNameNPath(
+            result.files.first.name, result.files.first.path!);
+      }
+    }
+    Constant.printValue(
         "Profile name : ${result.files.first.name}\n file path : ${result.files.first.path}");
   }
 }

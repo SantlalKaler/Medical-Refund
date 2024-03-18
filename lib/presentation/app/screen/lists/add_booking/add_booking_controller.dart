@@ -108,7 +108,7 @@ class AddBookingController extends GetxController {
       }
       testId = testIds.length > 1 ? testIds.join(",") : testIds.first;
     }else{
-      testId = test.value!.id!;
+      testId = test.value!.test!.id!;
       labId = priceList.value?.labId ?? lab.value!.id!;
     }
 
@@ -142,7 +142,7 @@ class AddBookingController extends GetxController {
           format: selectedPos.value == 0 ? 'yyyy-MM-dd hh:mm' : 'dd MMM yyyy'),
       'collectionSlot': selectedPos.value == 0
           ? Constant.changeDateFormat(DateTime.now().toString(),
-              changeInto: "hh mm a")
+              changeInto: "hh:mm")
           : timeController.value.text,
       'paymentGateway': 'CashFree',
       'paymentGatewayTxnId':
@@ -184,7 +184,7 @@ class AddBookingController extends GetxController {
   }
 
   CFSession? createSession(orderId, paymentSessionId) {
-    CFEnvironment environment = CFEnvironment.SANDBOX;
+    CFEnvironment environment = CFEnvironment.PRODUCTION;
     // Constant.printValue("Session id is : $paymentSessionId");
     try {
       var session = CFSessionBuilder()

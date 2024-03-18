@@ -35,7 +35,8 @@ Widget getNetworkImage(String image,
     {double? width,
     double? height,
     Color? color,
-    BoxFit boxFit = BoxFit.contain}) {
+    BoxFit boxFit = BoxFit.contain,
+    String placeHolder = "placeholder.svg"}) {
   return Image.network(
     image,
     color: color,
@@ -46,8 +47,7 @@ Widget getNetworkImage(String image,
       //Constant.printValue("Loading progress : $loadingProgress \n child is : $child");
       return child;
     },
-    errorBuilder: (context, error, stackTrace) =>
-        getSvgImage('placeholder.svg'),
+    errorBuilder: (context, error, stackTrace) => getSvgImage(placeHolder),
   );
 }
 
@@ -358,7 +358,7 @@ Widget buildTitleRow(String title, Function function,
         child: Row(
           children: [
             Expanded(
-                child: getCustomFont(title, 17.sp, Colors.black, 1,
+                child: getCustomFont(title, 17.sp, Colors.black, 5,
                     fontWeight: FontWeight.w500)),
             getSvgImage('arrow_right.svg', height: 24.h, width: 24.h),
           ],
@@ -721,13 +721,13 @@ Widget getCircularImage(BuildContext context, double width, double height,
 
 Widget getCircularNetworkImage(BuildContext context, double width,
     double height, double radius, String img,
-    {BoxFit boxFit = BoxFit.contain}) {
+    {BoxFit boxFit = BoxFit.contain, String placeHolder = "placeholder.svg"}) {
   return SizedBox(
     height: height,
     width: width,
     child: ClipRRect(
       borderRadius: BorderRadius.all(Radius.circular(radius)),
-      child: getNetworkImage(img, width: width, height: height, boxFit: boxFit),
+      child: getNetworkImage(img, width: width, height: height, boxFit: boxFit, placeHolder: placeHolder),
     ),
   );
 }

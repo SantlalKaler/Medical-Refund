@@ -115,6 +115,7 @@ class Tests {
     Test? test,
     num? priceBefore,
     num? price,
+    num? bookingPrice,
     num? adminCommission,
     String? createdAt,
     String? updatedAt,
@@ -124,6 +125,7 @@ class Tests {
     _title = title;
     _labs = labs;
     _test = test;
+    _bookingPrice = bookingPrice;
     _priceBefore = priceBefore;
     _price = price;
     _adminCommission = adminCommission;
@@ -136,6 +138,7 @@ class Tests {
     _id = json['_id'];
     _title = json['title'];
     _labs = json['labs'];
+    _bookingPrice = json['bookingPrice'];
     _test = json['test'] != null ? Test.fromJson(json['test']) : null;
     _priceBefore = json['priceBefore'];
     _price = json['price'];
@@ -149,6 +152,7 @@ class Tests {
   String? _labs;
   Test? _test;
   num? _priceBefore;
+  num? _bookingPrice;
   num? _price;
   num? _adminCommission;
   String? _createdAt;
@@ -159,6 +163,7 @@ class Tests {
     String? labs,
     Test? test,
     num? priceBefore,
+    num? bookingPrice,
     num? price,
     num? adminCommission,
     String? createdAt,
@@ -169,6 +174,7 @@ class Tests {
         id: id ?? _id,
         title: title ?? _title,
         labs: labs ?? _labs,
+        bookingPrice: bookingPrice ?? _bookingPrice,
         test: test ?? _test,
         priceBefore: priceBefore ?? _priceBefore,
         price: price ?? _price,
@@ -181,6 +187,7 @@ class Tests {
   String? get title => _title;
   String? get labs => _labs;
   Test? get test => _test;
+  num? get bookingPrice => _bookingPrice;
   num? get priceBefore => _priceBefore;
   num? get price => _price;
   num? get adminCommission => _adminCommission;
@@ -192,6 +199,7 @@ class Tests {
     final map = <String, dynamic>{};
     map['_id'] = _id;
     map['labs'] = _labs;
+    map['bookingPrice'] = _bookingPrice;
     if (_test != null) {
       map['test'] = _test?.toJson();
     }

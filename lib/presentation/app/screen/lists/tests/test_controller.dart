@@ -44,15 +44,20 @@ class TestController extends GetxController {
   }
 
   getTest(testId) async {
-    await getDefaultCity();
-    setLoading();
-    var res = await api.getRequest(AppUrls.testDetail, {
-      'id': testId,
-      'city':
-          defaultCity.value!.id! /* 'lat': '22.5913113', 'lng': '88.4234245'*/
-    });
-    setLoading();
-    testDetails.value = TestDetailModel.fromJson(res);
-    update();
+    try {
+      setLoading();
+      await getDefaultCity();
+      var res = await api.getRequest(AppUrls.testDetail, {
+        'id': testId,
+        'city':
+            defaultCity.value!.id! /* 'lat': '22.5913113', 'lng': '88.4234245'*/
+      });
+      if (res != null) {
+        testDetails.value = TestDetailModel.fromJson(res);
+      }
+    } finally {
+      setLoading();
+      update();
+    }
   }
 }

@@ -65,9 +65,9 @@ class _TestDetailScreenState extends State<TestDetailScreen> {
                           child: ListView(
                             scrollDirection: Axis.vertical,
                             children: [
-                              buildTestDetailLabListView(),
-                              getVerSpace(20.h),
                               buildTopContainer(),
+                              getVerSpace(20.h),
+                              buildTestDetailLabListView(),
                               getVerSpace(35.h),
                             ],
                           ),
@@ -83,62 +83,68 @@ class _TestDetailScreenState extends State<TestDetailScreen> {
 
   Widget buildTopContainer() {
     Test? test = controller.testDetails.value!.result!.test;
-    return Column(
-      children: [
-        getShadowDefaultContainer(
-            // height: 404.h,
-            color: Colors.white,
-            margin: EdgeInsets.symmetric(horizontal: 20.h),
-            padding: EdgeInsets.all(20.h),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return GetBuilder(
+        init: TestController(),
+        builder: (controller) {
+            return Column(
               children: [
-                /*
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    getCustomFont('02 August, 2022', 17.sp, Colors.black, 1,
-                        fontWeight: FontWeight.w500),
-                    getSvgImage('menu.svg', height: 24.h, width: 24.h),
-                  ],
-                ),
-                getVerSpace(14.h),*/
-                getCustomFont(test!.title!, 22.sp, Colors.black, 2,
-                    fontWeight: FontWeight.w700),
-                getVerSpace(6.h),
-                getCustomFont(test.shortDesc!, 15.sp, greyFontColor, 3,
-                    fontWeight: FontWeight.w500),
-                getVerSpace(20.h),
-                getDivider(),
-                getVerSpace(20.h),
-                /*
-                getMultilineCustomFont(
-                    Constant.removeHtmlTags(test.desc!), 17.sp, greyFontColor,
-                    txtHeight: 1.5),*/
-                HtmlWidget(test.desc!, ),
-               /* ReadMoreText(
-                  Constant.removeHtmlTags(test.desc!),
-                  trimLines: 5,
-                  colorClickableText: Colors.red,
-                  lessStyle: TextStyle(fontSize: 17.sp, color: accentColor),
-                  trimMode: TrimMode.Line,
-                  trimCollapsedText: 'Show more',
-                  trimExpandedText: 'Show less',
-                  moreStyle: TextStyle(fontSize: 17.sp, color: accentColor),
-                )*/
-                /*buildTaxRow('Tax', '\$1.50'),
-                getVerSpace(20.h),
-                buildTaxRow('GST', '\$2.50'),
-                getVerSpace(20.h),
-                buildTaxRow('Sub Total', '\$209'),
-                getVerSpace(20.h),
-                getDivider(),
-                getVerSpace(20.h),
-                getTotalRow()*/
+                getShadowDefaultContainer(
+                    // height: 404.h,
+                    color: Colors.white,
+                    margin: EdgeInsets.symmetric(horizontal: 20.h),
+                    padding: EdgeInsets.all(20.h),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        /*
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        getCustomFont('02 August, 2022', 17.sp, Colors.black, 1,
+                            fontWeight: FontWeight.w500),
+                        getSvgImage('menu.svg', height: 24.h, width: 24.h),
+                      ],
+                    ),
+                    getVerSpace(14.h),*/
+                        getCustomFont(test!.title!, 22.sp, Colors.black, 2,
+                            fontWeight: FontWeight.w700),
+                        getVerSpace(6.h),
+                        getCustomFont(test.shortDesc!, 15.sp, greyFontColor, 3,
+                            fontWeight: FontWeight.w500),
+                        getVerSpace(20.h),
+                        getDivider(),
+                        getVerSpace(20.h),
+                        /*
+                    getMultilineCustomFont(
+                        Constant.removeHtmlTags(test.desc!), 17.sp, greyFontColor,
+                        txtHeight: 1.5),*/
+                        HtmlWidget(
+                          test.desc!,
+                        ),
+                        /* ReadMoreText(
+                      Constant.removeHtmlTags(test.desc!),
+                      trimLines: 5,
+                      colorClickableText: Colors.red,
+                      lessStyle: TextStyle(fontSize: 17.sp, color: accentColor),
+                      trimMode: TrimMode.Line,
+                      trimCollapsedText: 'Show more',
+                      trimExpandedText: 'Show less',
+                      moreStyle: TextStyle(fontSize: 17.sp, color: accentColor),
+                    )*/
+                        /*buildTaxRow('Tax', '\$1.50'),
+                    getVerSpace(20.h),
+                    buildTaxRow('GST', '\$2.50'),
+                    getVerSpace(20.h),
+                    buildTaxRow('Sub Total', '\$209'),
+                    getVerSpace(20.h),
+                    getDivider(),
+                    getVerSpace(20.h),
+                    getTotalRow()*/
+                      ],
+                    )),
               ],
-            )),
-      ],
-    );
+            );
+        });
   }
 
   Widget buildTestDetailLabListView() {
@@ -193,6 +199,8 @@ class _TestDetailScreenState extends State<TestDetailScreen> {
                             getVerSpace(10.h),
                             getDivider(),
                             getVerSpace(10.h),
+                            buildTaxRow('Booking',
+                                Constant.getRuppee(labPrice.bookingPrice), ''),
                             buildTaxRow('Price',
                                 Constant.getRuppee(labPrice.priceBefore), ''),
                             buildTaxRow('Pay only',
@@ -201,7 +209,8 @@ class _TestDetailScreenState extends State<TestDetailScreen> {
                                 'MR will pay',
                                 Constant.getRuppee(
                                     labPrice.priceBefore! - labPrice.price!),
-                                '', color: accentColor),
+                                '',
+                                color: accentColor),
                             // buildTaxRow('Price', Constant.getRuppee(labPrice.price),
                             //     Constant.getRuppee(labPrice.priceBefore)),
                             const SizedBox(
@@ -244,7 +253,7 @@ class _TestDetailScreenState extends State<TestDetailScreen> {
                                             });
                                       },
                                       child: Text(
-                                        'Book now \n${Constant.getRuppee(labPrice.price)}',
+                                        'Book now \n${Constant.getRuppee(labPrice.bookingPrice)}',
                                         textAlign: TextAlign.center,
                                       )),
                                 ),
@@ -309,11 +318,13 @@ class _TestDetailScreenState extends State<TestDetailScreen> {
   }
 }
 
-Row buildTaxRow(String title, String rate, String oldRate, {FontWeight? fontWeight, Color? color, double? fontSize}) {
+Row buildTaxRow(String title, String rate, String oldRate,
+    {FontWeight? fontWeight, Color? color, double? fontSize}) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
-      getCustomFont(title, 17.sp, color ?? Colors.black, 1, fontWeight:fontWeight ?? FontWeight.w500),
+      getCustomFont(title, 17.sp, color ?? Colors.black, 1,
+          fontWeight: fontWeight ?? FontWeight.w500),
       Row(
         children: [
           getCustomFont(oldRate, fontSize ?? 17.sp, color ?? greyFontColor, 1,
@@ -327,28 +338,4 @@ Row buildTaxRow(String title, String rate, String oldRate, {FontWeight? fontWeig
       ),
     ],
   );
-}
-
-Widget buildTotalAmountRow(bookingAmount, pendingAmount,
-    {bool isTestBooking = false}) {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      isTestBooking
-          ? getCustomFont(
-              "Lab price ${Constant.getRuppee(bookingAmount)}\nYou pay only at Lab ${Constant.getRuppee(pendingAmount)}\nMR will pay ${Constant.getRuppee(bookingAmount - pendingAmount)}",
-              18.sp,
-              Colors.black,
-              5,
-              fontWeight: FontWeight.w500)
-          : getCustomFont(
-              "Booking price ${Constant.getRuppee(bookingAmount)}\nPending amount at Lab ${Constant.getRuppee(pendingAmount)}",
-              18.sp,
-              Colors.black,
-              2,
-              fontWeight: FontWeight.w500),
-      /* getCustomFont(Constant.getRuppee(price), 28.sp, accentColor, 1,
-          fontWeight: FontWeight.w700)*/
-    ],
-  ).marginSymmetric(horizontal: 20.h);
 }

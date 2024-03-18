@@ -19,6 +19,7 @@ class AppUrls {
   //user
   static const updateProfile = "update-profile";
   static const updateDp = "update-dp";
+  static const updatePan = "update-pan";
   static const myBookings = "my-booking";
   static const wallet = "my-wallet";
   static const details = "details";

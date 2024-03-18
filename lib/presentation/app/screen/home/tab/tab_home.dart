@@ -190,16 +190,11 @@ class _TabHomeState extends State<TabHome> {
                 child: Card(
                   child: Container(
                     padding: const EdgeInsets.all(16),
-                    height: 120,
+                    height: 130,
                     width: 200,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Expanded(
-                        //     child: getCircularNetworkImage(context, double.infinity,
-                        //             double.infinity, 22.h, test.image!,
-                        //             boxFit: BoxFit.cover)
-                        //         .marginAll(10.h)),
                         getCustomFont(test.title ?? '', 18.sp, Colors.black, 2,
                             fontWeight: FontWeight.w700),
                         const SizedBox(
@@ -236,7 +231,7 @@ class _TabHomeState extends State<TabHome> {
       children: [
         homeController.settings.value!.result!.appSetting!.test!
             ? getTabCell('#EEE5FF'.toColor(), 'test_icon.svg', 'Tests', () {
-                Constant.sendToNext(context, Routes.testsListsScreenRoute);
+                Constant.sendToNext(context, Routes.testsListsScreenRoute, arguments: {"fromHome": true});
               })
             : getEmptyView(),
         getHorSpace(20.h),

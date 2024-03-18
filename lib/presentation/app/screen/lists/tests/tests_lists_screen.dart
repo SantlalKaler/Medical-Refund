@@ -1,13 +1,13 @@
 import 'dart:math';
 
 import 'package:figma_squircle/figma_squircle.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lab_test_app/domain/model/LabDetailsModel.dart';
 import 'package:lab_test_app/presentation/app/screen/lists/labDetail/lab_controller.dart';
 
+import '../../../../../domain/model/test.dart';
 import '../../../../base/color_data.dart';
 import '../../../../base/constant.dart';
 import '../../../../base/widget_utils.dart';
@@ -26,11 +26,15 @@ class TestsListsScreen extends StatefulWidget {
 }
 
 class _TestsListsScreenState extends State<TestsListsScreen> {
-  late final HomeController homeController;
+  HomeController homeController = Get.find();
+  bool fromHome = true;
 
   @override
   void initState() {
-    homeController = Get.put(HomeController());
+    var args = Get.arguments;
+    if (args != null) {
+      fromHome = args['fromHome'];
+    }
     super.initState();
   }
 
@@ -40,6 +44,7 @@ class _TestsListsScreenState extends State<TestsListsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Constant.printValue("from Home $fromHome");
     initializeScreenSize(context);
     return WillPopScope(
       onWillPop: () async {
@@ -59,7 +64,9 @@ class _TestsListsScreenState extends State<TestsListsScreen> {
               Expanded(
                 child: Column(
                   children: [
-                    buildTestsListView(),
+                    if (homeController.homeData.value?.tests != null &&
+                        homeController.homeData.value!.tests!.isNotEmpty)
+                      buildTestsListView(),
                     //buildAddTestButton(context)
                   ],
                 ).marginSymmetric(horizontal: 20.h),
@@ -87,14 +94,13 @@ class _TestsListsScreenState extends State<TestsListsScreen> {
 
   Expanded buildTestsListView() {
     var colorList = DataFile.colorList;
-    double margin = 20.h;
-    int crossCount = 3;
+    double margin = 10.h;
+    int crossCount = 2;
     if (context.isTablet) {
       crossCount = 4;
     }
-    double width = (MediaQuery.of(context).size.width - (margin * crossCount)) /
-        crossCount;
-    double height = 140.h;
+    var height = MediaQuery.of(context).size.height;
+    var width = MediaQuery.of(context).size.width;
     LabController labController = Get.find();
     final random = Random();
 
@@ -103,13 +109,15 @@ class _TestsListsScreenState extends State<TestsListsScreen> {
         crossAxisCount: crossCount,
         crossAxisSpacing: margin,
         mainAxisSpacing: margin,
-        childAspectRatio: width / height,
-        children: List.generate(labController.tests.length, (index) {
-          Tests test = labController.tests[index];
-          return singleTestView(test, () {
+        childAspectRatio: height / (width * 1.5),
+        children: List.generate(
+            homeController.homeData.value!.tests?.length ?? 0, (index) {
+          Test test = homeController.homeData.value!.tests![index];
+          return singleTestViewForHome(test, () {
             Constant.sendToNext(context, Routes.testDetailScreenRoute,
-                arguments: test.id);
-          }, colorList[random.nextInt(colorList.length)].toColor());
+                arguments: test.id!);
+          }, colorList[random.nextInt(colorList.length)].toColor(),
+              showPrice: true);
         }),
       ),
     );
@@ -117,7 +125,9 @@ class _TestsListsScreenState extends State<TestsListsScreen> {
 }
 
 Widget singleTestView(Tests test, onTap, Color color,
-    {bool showPrice = false, bool testSelected = false}) {
+    {bool showPrice = false,
+    bool testSelectable = false,
+    bool testSelected = false}) {
   return InkWell(
     onTap: onTap,
     child: Container(
@@ -135,7 +145,7 @@ Widget singleTestView(Tests test, onTap, Color color,
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (showPrice)
+              if (testSelectable)
                 Checkbox(
                     value: testSelected,
                     onChanged: (value) {
@@ -155,6 +165,11 @@ Widget singleTestView(Tests test, onTap, Color color,
                   children: [
                     getVerSpace(12.h),
                     buildTaxRow(
+                      'Booking',
+                      Constant.getRuppee(test.bookingPrice),
+                      '',
+                    ),
+                    buildTaxRow(
                       'Price',
                       Constant.getRuppee(test.priceBefore),
                       '',
@@ -164,10 +179,43 @@ Widget singleTestView(Tests test, onTap, Color color,
                     getVerSpace(10.h),
                     buildTaxRow('MR will pay',
                         Constant.getRuppee(test.priceBefore! - test.price!), '',
-                        color: accentColor),
+                        color: accentColor, fontSize: 14),
                   ],
                 )
               : Container(),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget singleTestViewForHome(Test test, onTap, Color color,
+    {bool showPrice = false,
+    bool testSelectable = false,
+    bool testSelected = false}) {
+  return InkWell(
+    onTap: onTap,
+    child: Container(
+      alignment: Alignment.center,
+      padding: EdgeInsets.all(15.h),
+      decoration: BoxDecoration(
+        borderRadius: SmoothBorderRadius.all(
+            SmoothRadius(cornerRadius: 22.h, cornerSmoothing: 20.h)),
+        color: color,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: getCustomFont(test.title ?? '', 15.sp, Colors.black, 4,
+                    fontWeight: FontWeight.w700, ),
+              ),
+            ],
+          ),
         ],
       ),
     ),

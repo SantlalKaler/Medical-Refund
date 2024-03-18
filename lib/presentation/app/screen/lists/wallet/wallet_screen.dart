@@ -108,10 +108,14 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
           'Request Withdrawal',
           Colors.white,
           () {
-            if (controller.wallet.value?.result?.totalAmount == null) {
-              return showSnackbar('Error', 'Amount must be more than Rs 10');
-            } else if (controller.wallet.value!.result!.totalAmount! < 10) {
-              showSnackbar('Error', 'Amount must be more than Rs 10');
+            if (controller.wallet.value?.result?.totalAmount == null ||
+                controller.wallet.value!.result!.totalAmount! < 500) {
+              showSnackbar('Error',
+                  'Amount must be more than Rs 500, You can only use this amount for bookings.');
+              return;
+            } else if (controller.user.value?.panNumber?.isEmpty == true) {
+              showSnackbar('Error',
+                  'Please upload or add your pan info in your profile.');
               return;
             }
             showDialog(
@@ -144,6 +148,7 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
 
   Widget buildWalletTransaction(BuildContext context) {
     var transactions = controller.wallet.value?.result?.transactions;
+
     return getShadowDefaultContainer(
         width: double.infinity,
         color: Colors.white,
@@ -153,7 +158,7 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
           children: [
             getCustomFont("Wallet Transactions", 20.sp, Colors.black, 1,
                 fontWeight: FontWeight.w700),
-            transactions!.isEmpty
+            (transactions == null || transactions.isEmpty == true)
                 ? Center(
                     heightFactor: 5.0,
                     child: getCustomFont(
@@ -161,30 +166,49 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
                         fontWeight: FontWeight.w500),
                   )
                 : DataTable(
+                    horizontalMargin: 5,
+                    columnSpacing: 30.w,
                     columns: const <DataColumn>[
                       DataColumn(label: Text('Date')),
-                      DataColumn(label: Text('')),
+                      DataColumn(label: Text('Received')),
+                      DataColumn(label: Text('Transfer')),
                       DataColumn(label: Text('Amount')),
                     ],
                     rows: transactions.map((transaction) {
+                      var transactionIn =
+                          transaction.type == "IN" ? true : false;
                       return DataRow(
                         cells: <DataCell>[
                           DataCell(
                             getCustomFont(
                                 Constant.changeDateFormat(
                                     transaction.createdAt!),
-                                16.sp,
+                                14.sp,
                                 greyFontColor,
                                 1,
                                 fontWeight: FontWeight.w500),
                           ),
                           DataCell(
-                            getCustomFont("", 16.sp, greyFontColor, 1,
+                            getCustomFont(
+                                transactionIn
+                                    ? transaction.booking?.users?.name ?? ""
+                                    : "",
+                                14.sp,
+                                greyFontColor,
+                                1,
                                 fontWeight: FontWeight.w500),
                           ),
                           DataCell(
-                            getCustomFont(transaction.amount.toString(), 16.sp,
+                            getCustomFont(!transactionIn ? "Bank" : "", 14.sp,
                                 greyFontColor, 1,
+                                fontWeight: FontWeight.w500),
+                          ),
+                          DataCell(
+                            getCustomFont(
+                                "${transactionIn ? "+" : "-"}Rs. ${transaction.amount.toString()}",
+                                14.sp,
+                                greyFontColor,
+                                1,
                                 fontWeight: FontWeight.w500),
                           ),
                         ],
@@ -225,7 +249,7 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
               getVerSpace(20.h),
               getButton(
                   context, accentColor, "Request Withdrawal", Colors.white, () {
-                    Get.back(closeOverlays: true);
+                Get.back(closeOverlays: true);
                 if (controller.amountController.value.text.isEmpty) {
                   showSnackbar("Alert", "Enter withdrawal amount");
                 } else if (int.parse(controller.amountController.value.text) >

@@ -50,10 +50,10 @@ class API {
       if (e is DioError) {
         if (e.error is TimeoutException) {
           showSnackbar("Alert",
-              "No Internet connection or Your Internet connection is slow.");
+              "Something went wrong.");
         } else {
           showSnackbar("Alert",
-              "No Internet connection or Your Internet connection is slow.");
+              "Something went wrong.");
         }
       }
     }

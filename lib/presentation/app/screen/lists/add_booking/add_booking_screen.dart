@@ -34,6 +34,11 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
 
   num testPendingAmount = 0;
   num testBookingPrice = 0;
+  num testPrice = 0;
+  num payOnly = 0;
+  num mrWillPay = 0;
+
+  bool isTestBooking = false;
 
   LabController labController = Get.find();
 
@@ -52,53 +57,69 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
         controller.priceList.value = args['priceList'];
       } else if (args.containsKey('multiTests')) {
         controller.multiTests.value = true;
+        setMultiTestPrice();
       } else {
         controller.test.value = args['test'];
         controller.lab.value = args['lab'];
         controller.testAdminCommission.value = args['adminCommission'] == null
             ? 0
             : int.parse(args['adminCommission'].toString());
+
+        setSingleTestPrice();
       }
     }
   }
 
   List visit = ['Visit Lab', 'Visit Home'];
 
-  @override
-  Widget build(BuildContext context) {
-    bool isTestBooking = (controller.specialist.value == null &&
-        controller.priceList.value == null);
+  setSingleTestPrice(){
+    testBookingPrice = controller.test.value?.bookingPrice ?? 0;
+    testPrice = controller.test.value?.priceBefore ?? 0;
+    payOnly = controller.test.value?.price ?? 0;
+    mrWillPay = ((controller.test.value?.priceBefore ?? 0) - (controller.test.value?.price ?? 0));
+  }
 
+  setMultiTestPrice(){
     // when data come from lab details page to book
     if (controller.multiTests.isTrue) {
       for (var test in labController.selectedTests) {
-        Constant.printValue("TEst Price : ${test.test?.price}");
+        //Constant.printValue("TEst Price : ${test.test?.price}");
+        testBookingPrice += test.bookingPrice!;
+        testPrice += test.priceBefore ?? 0;
+        payOnly += test.price ?? 0;
+        mrWillPay += ((test.priceBefore ?? 0) - (test.price ?? 0));
+
         var amount = test.price! - (test.adminCommission ?? 0);
         testPendingAmount += amount;
-        testBookingPrice += test.priceBefore!;
       }
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    isTestBooking = (controller.specialist.value == null &&
+        controller.priceList.value == null);
 
     dynamic pendingAmount = (controller.specialist.value != null)
         ? controller.specialist.value!.price! -
-        controller.specialist.value!.adminCommission!
+            controller.specialist.value!.adminCommission!
         : (controller.priceList.value != null)
-        ? controller.priceList.value!.price! -
-        controller.priceList.value!.adminCommission!
-        : (controller.multiTests.isTrue)
-        ?testPendingAmount
-        : (controller.test.value!.price!) -
-        controller.testAdminCommission.value;
+            ? controller.priceList.value!.price! -
+                controller.priceList.value!.adminCommission!
+            : (controller.multiTests.isTrue)
+                ? testPendingAmount
+                : (controller.test.value!.price!) -
+                    controller.testAdminCommission.value;
 
     dynamic bookingPrice = (controller.specialist.value != null)
         ? controller.specialist.value!.adminCommission!
         : (controller.priceList.value != null)
-        ? controller.priceList.value!.adminCommission
-        : (controller.priceList.value != null)
-        ? controller.test.value!.adminCommission!
-        : (controller.multiTests.isTrue)
-        ? testBookingPrice
-        : (controller.test.value!.priceBefore!);
+            ? controller.priceList.value!.adminCommission
+            : (controller.priceList.value != null)
+                ? controller.test.value!.adminCommission!
+                : (controller.multiTests.isTrue)
+                    ? testBookingPrice
+                    : (controller.test.value!.priceBefore!);
 
     initializeScreenSize(context);
     return WillPopScope(
@@ -119,9 +140,9 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
               getVerSpace(20.h),
               Expanded(
                   child: ListView(
-                    // crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      getCustomFont(
+                // crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  getCustomFont(
                           controller.specialist.value == null
                               ? 'Test'
                               : 'Specialist',
@@ -129,39 +150,62 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
                           Colors.black,
                           1,
                           fontWeight: FontWeight.w700)
-                          .marginSymmetric(horizontal: 20.h),
-                      getVerSpace(12.h),
-                      buildTestInfoView(),
-                      getVerSpace(20.h),
-                      Obx(
-                            () =>
-                        controller.selectedPos.value == 1
-                            ? buildInfoWidget()
-                            : getEmptyView(),
-                      ),
-                      getVerSpace(20.h),
-                      controller.specialist.value == null
-                          ? buildVisitWidget()
-                          : getEmptyView(),
-                      getVerSpace(20.h),
-                      controller.specialist.value == null
-                          ? buildSelectedLabView()
-                          : getEmptyView(),
-                      getVerSpace(20.h),
-                      buildTotalAmountRow(bookingPrice, pendingAmount,
-                          isTestBooking: isTestBooking),
-                      getVerSpace(20.h),
-                      buildPlaceOrderButton(
-                          context,
-                          isTestBooking ? pendingAmount : bookingPrice),
-                      getVerSpace(20.h),
-                    ],
-                  ))
+                      .marginSymmetric(horizontal: 20.h),
+                  getVerSpace(12.h),
+                  buildTestInfoView(),
+                  getVerSpace(20.h),
+                  Obx(
+                    () => controller.selectedPos.value == 1
+                        ? buildInfoWidget()
+                        : getEmptyView(),
+                  ),
+                  getVerSpace(20.h),
+                  controller.specialist.value == null
+                      ? buildVisitWidget()
+                      : getEmptyView(),
+                  getVerSpace(20.h),
+                  controller.specialist.value == null
+                      ? buildSelectedLabView()
+                      : getEmptyView(),
+                  getVerSpace(20.h),
+                  buildTotalAmountRow(),
+                  getVerSpace(20.h),
+                  buildPlaceOrderButton(
+                      context, isTestBooking ? pendingAmount : bookingPrice),
+                  getVerSpace(20.h),
+                ],
+              ))
             ],
           ),
         ),
       ),
     );
+  }
+
+  Widget buildTotalAmountRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        isTestBooking
+            ? getCustomFont(
+                "Booking ${Constant.getRuppee(testBookingPrice)}\n"
+                "Lab price ${Constant.getRuppee(testPrice)}\n"
+                "You pay only at Lab ${Constant.getRuppee(payOnly)}\n"
+                "MR will pay ${Constant.getRuppee(mrWillPay)}",
+                18.sp,
+                Colors.black,
+                5,
+                fontWeight: FontWeight.w500)
+            : getCustomFont(
+                "Booking price ${Constant.getRuppee(0)}\nPending amount at Lab ${Constant.getRuppee(0)}",
+                18.sp,
+                Colors.black,
+                2,
+                fontWeight: FontWeight.w500),
+        /* getCustomFont(Constant.getRuppee(price), 28.sp, accentColor, 1,
+          fontWeight: FontWeight.w700)*/
+      ],
+    ).marginSymmetric(horizontal: 20.h);
   }
 
   Widget buildSelectedLabView() {
@@ -187,14 +231,8 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
 
     final random = Random();
 
-    var height = MediaQuery
-        .of(context)
-        .size
-        .height;
-    var width = MediaQuery
-        .of(context)
-        .size
-        .width;
+    var height = MediaQuery.of(context).size.height;
+    var width = MediaQuery.of(context).size.width;
 
     if (controller.multiTests.isTrue) {
       return GridView.count(
@@ -205,8 +243,7 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
         childAspectRatio: height / (width * 1.5),
-        children:
-        List.generate(labController.selectedTests.length, (index) {
+        children: List.generate(labController.selectedTests.length, (index) {
           Tests test = labController.selectedTests[index];
           return singleTestView(test, () {},
               colorList[random.nextInt(colorList.length)].toColor());
@@ -236,26 +273,26 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
           return controller.loading.value
               ? showLoading()
               : getButton(
-            context,
-            accentColor,
-            'Place Order',
-            Colors.white,
-                () {
-              if (controller.selectedPos.value == 1 &&
-                  formGlobalKey.currentState!.validate()) {
-                //controller.addBooking();
-                controller.createPayment(bookinAmount);
-              }
-              if (controller.selectedPos.value == 0) {
-                controller.createPayment(bookinAmount);
-                //controller.addBooking();
-              }
-            },
-            18.sp,
-            weight: FontWeight.w700,
-            buttonHeight: 60.h,
-            borderRadius: BorderRadius.circular(22.h),
-          ).marginSymmetric(horizontal: 20.h);
+                  context,
+                  accentColor,
+                  'Place Order ${Constant.getRuppee(testBookingPrice)}',
+                  Colors.white,
+                  () {
+                    if (controller.selectedPos.value == 1 &&
+                        formGlobalKey.currentState!.validate()) {
+                      //controller.addBooking();
+                      controller.createPayment(testBookingPrice);
+                    }
+                    if (controller.selectedPos.value == 0) {
+                      controller.createPayment(testBookingPrice);
+                      //controller.addBooking();
+                    }
+                  },
+                  18.sp,
+                  weight: FontWeight.w700,
+                  buttonHeight: 60.h,
+                  borderRadius: BorderRadius.circular(22.h),
+                ).marginSymmetric(horizontal: 20.h);
         });
   }
 
@@ -334,28 +371,27 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
         getVerSpace(10.h),
         Row(
             children: List.generate(2, (index) {
-              return Row(
-                children: [
-                  ObxValue(
-                          (p0) =>
-                          InkWell(
-                            onTap: () {
-                              controller.selectedPos.value = index;
-                            },
-                            child: (controller.selectedPos.value == index)
-                                ? getSvgImage('radio_checked.svg',
+          return Row(
+            children: [
+              ObxValue(
+                  (p0) => InkWell(
+                        onTap: () {
+                          controller.selectedPos.value = index;
+                        },
+                        child: (controller.selectedPos.value == index)
+                            ? getSvgImage('radio_checked.svg',
                                 height: 24.h, width: 24.h)
-                                : getSvgImage('radio_unchecked.svg',
+                            : getSvgImage('radio_unchecked.svg',
                                 height: 24.h, width: 24.h),
-                          ),
-                      controller.selectedPos),
-                  getHorSpace(10.h),
-                  getCustomFont(visit[index], 17.sp, Colors.black, 1,
+                      ),
+                  controller.selectedPos),
+              getHorSpace(10.h),
+              getCustomFont(visit[index], 17.sp, Colors.black, 1,
                       fontWeight: FontWeight.w500)
-                      .paddingOnly(right: 32.h)
-                ],
-              );
-            })),
+                  .paddingOnly(right: 32.h)
+            ],
+          );
+        })),
       ],
     ).marginSymmetric(horizontal: 20.h);
   }
@@ -462,21 +498,19 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
                         withSufix: true,
                         isReadonly: true,
                         keyboardType: TextInputType.none,
-                        suffiximage: 'time.svg',
-                        validator: (time) {
-                          if (time!.isNotEmpty) {
-                            return null;
-                          } else {
-                            return 'Please select time';
-                          }
-                        },
-                        imagefunction: () {
-                          getTimeBottomSheet(context, (time) {
-                            controller.timeController.value.text =
-                                Constant.changeDateFormat(time.toString(),
-                                    changeInto: "HH:mm");
-                          });
-                        }))
+                        suffiximage: 'time.svg', validator: (time) {
+                      if (time!.isNotEmpty) {
+                        return null;
+                      } else {
+                        return 'Please select time';
+                      }
+                    }, imagefunction: () {
+                      getTimeBottomSheet(context, (time) {
+                        controller.timeController.value.text =
+                            Constant.changeDateFormat(time.toString(),
+                                changeInto: "HH:mm");
+                      });
+                    }))
               ],
             )
           ],

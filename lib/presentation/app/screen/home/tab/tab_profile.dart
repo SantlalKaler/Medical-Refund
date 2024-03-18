@@ -79,7 +79,8 @@ class _TabProfileState extends State<TabProfile> {
                     controller.user.value?.image == null
                         ? Constant.profilePic
                         : "${AppUrls.imageBaseUrl}${controller.user.value!.image!}",
-                    boxFit: BoxFit.fill),
+                    boxFit: BoxFit.fill,
+                    placeHolder: "profile_active.svg"),
                 getHorSpace(12.h),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

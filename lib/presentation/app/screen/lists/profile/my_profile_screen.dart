@@ -81,9 +81,10 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                               92.h,
                                               22.h,
                                               "${AppUrls.imageBaseUrl}${controller.isSpecialist.value ? controller.specialist.value?.image : controller.user.value!.image!}",
-                                              boxFit: BoxFit.fill)
+                                              boxFit: BoxFit.fill,
+                                      placeHolder: "profile_active.svg")
                                           .marginSymmetric(horizontal: 20.h),
-                                      InkWell(
+                                   /*   InkWell(
                                           onTap: () {
                                             PrefData.setIsSignIn(false);
                                             PrefData.clearUser();
@@ -96,7 +97,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                             padding: const EdgeInsets.only(
                                                 right: 20),
                                             child: getSvgImage("logout.svg"),
-                                          )),
+                                          )),*/
                                     ],
                                   ),
                                   getVerSpace(31.h),
@@ -121,6 +122,9 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
   }
 
   Wrap buildProfileTextField({User? user, Specialist? specialist}) {
+    Constant.printValue("Pan number is ${user?.panNumber}\n"
+        "pan image : ${AppUrls.imageBaseUrl}${user?.panImage}");
+
     return Wrap(
       children: [
         buildRow('Full Name', user != null ? user.name! : specialist!.name!),
@@ -139,6 +143,12 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                   Constant.changeDateFormat(
                       user != null ? user.dobDate! : "1997-09-09")),
               getDivider().marginSymmetric(vertical: 16.h),
+              buildRow('Pan Number', user!.panNumber ?? ""),
+              getDivider().marginSymmetric(vertical: 16.h),
+              if (user.panImage != null && user.panImage!.isNotEmpty)
+                getCircularNetworkImage(context, double.infinity, 150.h, 22.h,
+                    "${AppUrls.imageBaseUrl}${user.panImage}",
+                    boxFit: BoxFit.fill)
             ],
           ),
         ),
@@ -185,6 +195,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
     ).marginSymmetric(horizontal: 20.h);
   }
 
+}
   Row buildRow(String title, String name) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -196,4 +207,3 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
       ],
     );
   }
-}
