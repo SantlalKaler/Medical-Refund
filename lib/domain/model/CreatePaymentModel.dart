@@ -5,35 +5,43 @@ class CreatePaymentModel {
   CreatePaymentModel({
       String? status, 
       String? message, 
+      bool? payment,
       Result? result,}){
     _status = status;
     _message = message;
+    _payment = payment;
     _result = result;
 }
 
   CreatePaymentModel.fromJson(dynamic json) {
     _status = json['status'];
+    _payment = json['payment'];
     _message = json['message'];
     _result = json['result'] != null ? Result.fromJson(json['result']) : null;
   }
   String? _status;
   String? _message;
+  bool? _payment;
   Result? _result;
 CreatePaymentModel copyWith({  String? status,
   String? message,
+  bool? payment,
   Result? result,
 }) => CreatePaymentModel(  status: status ?? _status,
   message: message ?? _message,
+  payment: payment ?? _payment,
   result: result ?? _result,
 );
   String? get status => _status;
   String? get message => _message;
+  bool? get payment => _payment;
   Result? get result => _result;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['status'] = _status;
     map['message'] = _message;
+    map['payment'] = _payment;
     if (_result != null) {
       map['result'] = _result?.toJson();
     }
@@ -46,7 +54,7 @@ Result resultFromJson(String str) => Result.fromJson(json.decode(str));
 String resultToJson(Result data) => json.encode(data.toJson());
 class Result {
   Result({
-      num? cfOrderId, 
+      String? cfOrderId,
       String? createdAt, 
       CustomerDetails? customerDetails, 
       String? entity, 
@@ -85,7 +93,7 @@ class Result {
 }
 
   Result.fromJson(dynamic json) {
-    _cfOrderId = json['cf_order_id'];
+    _cfOrderId = json['cf_order_id'].toString();
     _createdAt = json['created_at'];
     _customerDetails = json['customer_details'] != null ? CustomerDetails.fromJson(json['customer_details']) : null;
     _entity = json['entity'];
@@ -109,7 +117,7 @@ class Result {
     _settlements = json['settlements'] != null ? Settlements.fromJson(json['settlements']) : null;
     _terminalData = json['terminal_data'];
   }
-  num? _cfOrderId;
+  String? _cfOrderId;
   String? _createdAt;
   CustomerDetails? _customerDetails;
   String? _entity;
@@ -127,7 +135,7 @@ class Result {
   Refunds? _refunds;
   Settlements? _settlements;
   dynamic _terminalData;
-Result copyWith({  num? cfOrderId,
+Result copyWith({  String? cfOrderId,
   String? createdAt,
   CustomerDetails? customerDetails,
   String? entity,
@@ -164,7 +172,7 @@ Result copyWith({  num? cfOrderId,
   settlements: settlements ?? _settlements,
   terminalData: terminalData ?? _terminalData,
 );
-  num? get cfOrderId => _cfOrderId;
+  String? get cfOrderId => _cfOrderId;
   String? get createdAt => _createdAt;
   CustomerDetails? get customerDetails => _customerDetails;
   String? get entity => _entity;

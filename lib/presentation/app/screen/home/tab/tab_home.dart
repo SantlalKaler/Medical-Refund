@@ -231,7 +231,8 @@ class _TabHomeState extends State<TabHome> {
       children: [
         homeController.settings.value!.result!.appSetting!.test!
             ? getTabCell('#EEE5FF'.toColor(), 'test_icon.svg', 'Tests', () {
-                Constant.sendToNext(context, Routes.testsListsScreenRoute, arguments: {"fromHome": true});
+                Constant.sendToNext(context, Routes.testsListsScreenRoute,
+                    arguments: {"fromHome": true});
               })
             : getEmptyView(),
         getHorSpace(20.h),
@@ -290,68 +291,62 @@ class _TabHomeState extends State<TabHome> {
   }
 
   Widget buildTopView(List<Sliders> sliders) {
-    return CarouselSlider(
-      options: CarouselOptions(
-        autoPlay: true,
-        enlargeCenterPage: true,
-        aspectRatio: 16 / 9,
-        autoPlayCurve: Curves.fastOutSlowIn,
-        enableInfiniteScroll: true,
-        autoPlayAnimationDuration: const Duration(milliseconds: 800),
-        viewportFraction: 1.0,
-      ),
-      items: sliders.map((sliders) {
-        return Builder(
-          builder: (BuildContext context) {
-            return Container(
-              height: 168.h,
-              margin: EdgeInsets.symmetric(horizontal: 20.h),
-              child: getNetworkImage(sliders.image!),
+    return Stack(
+      children: [
+        CarouselSlider(
+          options: CarouselOptions(
+              autoPlay: true,
+              enlargeCenterPage: true,
+              aspectRatio: 16 / 9,
+              autoPlayCurve: Curves.linear,
+              enableInfiniteScroll: true,
+              autoPlayAnimationDuration: const Duration(milliseconds: 1000),
+              viewportFraction: 1.0,
+              onPageChanged: (index, reason) {
+                homeController.setCurrentIndex(index);
+              }),
+          items: sliders.map((sliders) {
+            return Builder(
+              builder: (BuildContext context) {
+                return Container(
+                  height: 168.h,
+                  margin: EdgeInsets.symmetric(horizontal: 20.h),
+                  child: getCircularNetworkImage(
+                      context, double.infinity, 168.h, 10, sliders.image!,
+                      boxFit: BoxFit.cover),
+                );
+              },
             );
-          },
-        );
-      }).toList(),
+          }).toList(),
+        ),
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: sliders.asMap().entries.map((entry) {
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 500),
+                width: 10.0,
+                height: 10.0,
+                margin:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: (Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : accentColor)
+                        .withOpacity(
+                            homeController.currentIndex.value == entry.key
+                                ? 1
+                                : 0.2)),
+              );
+            }).toList(),
+          ),
+        ),
+      ],
     );
-    /*return Container(
-      height: 168.h,
-      margin: EdgeInsets.symmetric(horizontal: 20.h),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(22.h)),
-        color: accentColor,
-      ),
-      child: Row(
-        children: [
-          Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: getMultilineCustomFont(
-                        'Assured \nLaboratories', 20.sp, Colors.white,
-                        fontWeight: FontWeight.w700,
-                        txtHeight: 1.4.h,
-                        overflow: TextOverflow.fade),
-                  ),
-                  getVerSpace(10.h),
-                  Expanded(
-                    flex: 1,
-                    child: getMultilineCustomFont(
-                        '100% Guaranteed \nResults', 15.sp, Colors.white,
-                        fontWeight: FontWeight.w500,
-                        txtHeight: 1.4.h,
-                        overflow: TextOverflow.fade),
-                  ),
-                ],
-              ).paddingOnly(left: 22.h).paddingSymmetric(vertical: 25.h)),
-          Align(
-              alignment: Alignment.bottomRight,
-              child: getNetworkImage("https://images.unsplash.com/photo-1661956600684-97d3a4320e45?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxzZWFyY2h8MXx8ZGV2ZWxvcGVyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=600&q=60",
-                  width: 258.h, boxFit: BoxFit.cover))
-        ],
-      ),
-    );*/
   }
 
   Widget buildTopProfileView() {
@@ -446,6 +441,7 @@ SizedBox buildNearbyLabView(List<Lab> labs) {
                         Image.network(
                           item.image ?? '',
                           height: 100,
+                          fit: BoxFit.cover,
                         ),
                         const SizedBox(
                           height: 10,

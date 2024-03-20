@@ -26,7 +26,6 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
     super.initState();
     Get.delete<WalletController>();
     controller = Get.put(WalletController());
-    controller.getUser();
   }
 
   void backClick() {
@@ -35,6 +34,7 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var transactions = controller.wallet.value?.result?.transactions;
     return WillPopScope(
       onWillPop: () async {
         backClick();
@@ -43,26 +43,39 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
       child: Scaffold(
         backgroundColor: Colors.white,
         body: SafeArea(
-          child: Column(
-            children: [
-              getVerSpace(20.h),
-              getBackAppBar(context, () {
-                backClick();
-              }, "Wallet"),
-              GetBuilder<WalletController>(
-                  init: WalletController(),
-                  builder: (controller) => controller.loading.value
-                      ? showLoading()
-                      : Column(
-                          children: [
-                            buildWalletAmountView(context),
-                            getVerSpace(20.h),
-                            buildButtonView(context),
-                            getVerSpace(30.h),
-                            buildWalletTransaction(context)
-                          ],
-                        )),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                getVerSpace(20.h),
+                getBackAppBar(context, () {
+                  backClick();
+                }, "Wallet"),
+                GetBuilder<WalletController>(
+                    init: WalletController(),
+                    builder: (controller) => controller.loading.value
+                        ? showLoading()
+                        : Column(
+                            children: [
+                              buildWalletAmountView(context),
+                              getVerSpace(20.h),
+                              buildButtonView(context),
+                              getVerSpace(30.h),
+                              getCustomFont(
+                                  "Wallet Transactions", 20.sp, Colors.black, 1,
+                                  fontWeight: FontWeight.w700),
+                              if (transactions == null ||
+                                  transactions.isEmpty == true)
+                                Center(
+                                  heightFactor: 5.0,
+                                  child: getCustomFont("No transactions found",
+                                      20.sp, greyFontColor, 1,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              buildWalletTransaction(context)
+                            ],
+                          )),
+              ],
+            ),
           ),
         ),
       ),
@@ -110,11 +123,11 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
           () {
             if (controller.wallet.value?.result?.totalAmount == null ||
                 controller.wallet.value!.result!.totalAmount! < 500) {
-              showSnackbar('Error',
+              showSnackbar('Alert!',
                   'Amount must be more than Rs 500, You can only use this amount for bookings.');
               return;
             } else if (controller.user.value?.panNumber?.isEmpty == true) {
-              showSnackbar('Error',
+              showSnackbar('Alert!',
                   'Please upload or add your pan info in your profile.');
               return;
             }
@@ -149,74 +162,61 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
   Widget buildWalletTransaction(BuildContext context) {
     var transactions = controller.wallet.value?.result?.transactions;
 
-    return getShadowDefaultContainer(
-        width: double.infinity,
-        color: Colors.white,
-        margin: EdgeInsets.symmetric(horizontal: 20.h, vertical: 20.h),
-        padding: EdgeInsets.symmetric(vertical: 10.h),
-        child: Column(
-          children: [
-            getCustomFont("Wallet Transactions", 20.sp, Colors.black, 1,
-                fontWeight: FontWeight.w700),
-            (transactions == null || transactions.isEmpty == true)
-                ? Center(
-                    heightFactor: 5.0,
-                    child: getCustomFont(
-                        "No transactions found", 20.sp, greyFontColor, 1,
+    return SingleChildScrollView(
+      child: getShadowDefaultContainer(
+          width: double.infinity,
+          color: Colors.white,
+          margin: EdgeInsets.symmetric(horizontal: 20.h, vertical: 20.h),
+          padding: EdgeInsets.symmetric(vertical: 10.h),
+          child: DataTable(
+            horizontalMargin: 5,
+            columnSpacing: 30.w,
+            columns: const <DataColumn>[
+              DataColumn(label: Text('Date')),
+              DataColumn(label: Text('Received')),
+              DataColumn(label: Text('Transfer')),
+              DataColumn(label: Text('Amount')),
+            ],
+            rows: transactions!.map((transaction) {
+              var transactionIn = transaction.type == "IN" ? true : false;
+              return DataRow(
+                cells: <DataCell>[
+                  DataCell(
+                    getCustomFont(
+                        Constant.changeDateFormat(transaction.createdAt!),
+                        14.sp,
+                        greyFontColor,
+                        1,
                         fontWeight: FontWeight.w500),
-                  )
-                : DataTable(
-                    horizontalMargin: 5,
-                    columnSpacing: 30.w,
-                    columns: const <DataColumn>[
-                      DataColumn(label: Text('Date')),
-                      DataColumn(label: Text('Received')),
-                      DataColumn(label: Text('Transfer')),
-                      DataColumn(label: Text('Amount')),
-                    ],
-                    rows: transactions.map((transaction) {
-                      var transactionIn =
-                          transaction.type == "IN" ? true : false;
-                      return DataRow(
-                        cells: <DataCell>[
-                          DataCell(
-                            getCustomFont(
-                                Constant.changeDateFormat(
-                                    transaction.createdAt!),
-                                14.sp,
-                                greyFontColor,
-                                1,
-                                fontWeight: FontWeight.w500),
-                          ),
-                          DataCell(
-                            getCustomFont(
-                                transactionIn
-                                    ? transaction.booking?.users?.name ?? ""
-                                    : "",
-                                14.sp,
-                                greyFontColor,
-                                1,
-                                fontWeight: FontWeight.w500),
-                          ),
-                          DataCell(
-                            getCustomFont(!transactionIn ? "Bank" : "", 14.sp,
-                                greyFontColor, 1,
-                                fontWeight: FontWeight.w500),
-                          ),
-                          DataCell(
-                            getCustomFont(
-                                "${transactionIn ? "+" : "-"}Rs. ${transaction.amount.toString()}",
-                                14.sp,
-                                greyFontColor,
-                                1,
-                                fontWeight: FontWeight.w500),
-                          ),
-                        ],
-                      );
-                    }).toList(),
-                  )
-          ],
-        ));
+                  ),
+                  DataCell(
+                    getCustomFont(
+                        transactionIn
+                            ? transaction.booking?.users?.name ?? ""
+                            : "",
+                        14.sp,
+                        greyFontColor,
+                        1,
+                        fontWeight: FontWeight.w500),
+                  ),
+                  DataCell(
+                    getCustomFont(
+                        !transactionIn ? "Bank" : "", 14.sp, greyFontColor, 1,
+                        fontWeight: FontWeight.w500),
+                  ),
+                  DataCell(
+                    getCustomFont(
+                        "${transactionIn ? "+" : "-"}Rs. ${transaction.amount.toString()}",
+                        14.sp,
+                        greyFontColor,
+                        1,
+                        fontWeight: FontWeight.w500),
+                  ),
+                ],
+              );
+            }).toList(),
+          )),
+    );
   }
 
   requestWithdrawalDialog() {

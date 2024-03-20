@@ -34,6 +34,10 @@ class ProfileController extends GetxController {
   final priceBeforeController = TextEditingController().obs;
   final totalPatientsController = TextEditingController().obs;
   final priceController = TextEditingController().obs;
+  final bankNameController = TextEditingController().obs;
+  final accNumberController = TextEditingController().obs;
+  final accHolderNameController = TextEditingController().obs;
+  final ifscCodeController = TextEditingController().obs;
 
   final user = Rxn<User>();
   final city = Rxn<Result>();
@@ -120,6 +124,10 @@ class ProfileController extends GetxController {
       emailController.value.text = user.value!.email!;
       phoneController.value.text = user.value!.mobile!;
       panNumberController.value.text = user.value!.panNumber ?? "";
+      bankNameController.value.text = user.value!.bankName ?? "";
+      accNumberController.value.text = user.value!.accNumber ?? "";
+      accHolderNameController.value.text = user.value!.accHolderName ?? "";
+      ifscCodeController.value.text = user.value!.ifsc ?? "";
       birthController.value.text =
           Constant.changeDateFormat(user.value!.dobDate!);
     }
@@ -208,17 +216,16 @@ class ProfileController extends GetxController {
     isLoading();
     if (res != null) {
       showSnackbar("Message", res['message'] ?? "");
-      if(res['status'] == 'success') {
+      if (res['status'] == 'success') {
         if (profilePicPath.value.isNotEmpty) {
           updateDP();
-        }else{
+        } else {
           updateProfile();
         }
       }
     } else {
       showSnackbar("Error", "Image is too large.");
     }
-
   }
 
   updateProfile() async {
@@ -243,7 +250,11 @@ class ProfileController extends GetxController {
                 upload: true),
             "name": nameController.value.text,
             "email": emailController.value.text,
-            "panNumber": panNumberController.value.text
+            "panNumber": panNumberController.value.text,
+            "bankName": bankNameController.value.text,
+            "accNumber": accNumberController.value.text,
+            "accHolderName": accHolderNameController.value.text,
+            "ifsc": ifscCodeController.value.text,
           };
     var res = await api.postRequest(
         isSpecialist.value

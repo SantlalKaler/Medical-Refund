@@ -143,7 +143,15 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                   Constant.changeDateFormat(
                       user != null ? user.dobDate! : "1997-09-09")),
               getDivider().marginSymmetric(vertical: 16.h),
-              buildRow('Pan Number', user!.panNumber ?? ""),
+              buildRow('Bank Name', user!.bankName ?? ""),
+              getDivider().marginSymmetric(vertical: 16.h),
+              buildRow('A/C Number', user.accNumber ?? ""),
+              getDivider().marginSymmetric(vertical: 16.h),
+              buildRow('A/C Holder', user.accHolderName ?? ""),
+              getDivider().marginSymmetric(vertical: 16.h),
+              buildRow('IFSC', user.ifsc ?? ""),
+              getDivider().marginSymmetric(vertical: 16.h),
+              buildRow('Pan Number', user.panNumber ?? ""),
               getDivider().marginSymmetric(vertical: 16.h),
               if (user.panImage != null && user.panImage!.isNotEmpty)
                 getCircularNetworkImage(context, double.infinity, 150.h, 22.h,

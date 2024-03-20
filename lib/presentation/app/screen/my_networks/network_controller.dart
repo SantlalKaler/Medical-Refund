@@ -1,4 +1,3 @@
-
 import 'package:get/get.dart';
 import 'package:lab_test_app/data/app_urls.dart';
 import 'package:lab_test_app/domain/model/MyNetworkModel.dart';
@@ -26,13 +25,17 @@ class NetworkController extends GetxController {
   }
 
   getNetworks() async {
-    setLoading();
-    var res = await api.getRequest(AppUrls.myNetwork, {
-      'id':user.value!.id!
-    });
-    networks.value = MyNetworkModel.fromJson(res);
-    setLoading();
-    update();
+    try {
+      setLoading();
 
+      var res =
+          await api.getRequest(AppUrls.myNetwork, {'id': user.value!.id!});
+      if (res != null) {
+        networks.value = MyNetworkModel.fromJson(res);
+      }
+    } finally {
+      setLoading();
+      update();
+    }
   }
 }

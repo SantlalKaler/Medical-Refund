@@ -55,7 +55,7 @@ class _MyNetworkScreenState extends State<MyNetworkScreen> {
                 builder: (controller) {
                   return (controller.loading.value)
                       ? showLoading()
-                      : (controller.networks.value!.result!.isEmpty)
+                      : (controller.networks.value?.result?.isEmpty == true)
                           ? Center(
                     heightFactor: 50.h,
                               child: getCustomFont(

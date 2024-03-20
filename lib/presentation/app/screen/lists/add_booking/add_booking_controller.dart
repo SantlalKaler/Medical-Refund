@@ -10,6 +10,7 @@ import 'package:flutter_cashfree_pg_sdk/utils/cfenums.dart';
 import 'package:flutter_cashfree_pg_sdk/utils/cfexceptions.dart';
 import 'package:get/get.dart';
 import 'package:get/get_rx/get_rx.dart';
+import 'package:dio/dio.dart' as dio;
 import 'package:lab_test_app/data/app_urls.dart';
 import 'package:lab_test_app/data/response_status.dart';
 import 'package:lab_test_app/domain/model/CommonModel.dart';
@@ -20,6 +21,7 @@ import 'package:lab_test_app/domain/model/Lab.dart';
 import 'package:lab_test_app/domain/model/specialist.dart';
 import 'package:lab_test_app/presentation/app/routes/app_routes.dart';
 import 'package:lab_test_app/presentation/app/screen/lists/labDetail/lab_controller.dart';
+import 'package:lab_test_app/presentation/app/screen/lists/wallet/wallet_controller.dart';
 import 'package:lab_test_app/presentation/base/constant.dart';
 import 'package:lab_test_app/presentation/base/pref_data.dart';
 import 'package:lab_test_app/presentation/base/view_utils.dart';
@@ -38,6 +40,7 @@ class AddBookingController extends GetxController {
   RxBool multiTests = false.obs;
   RxInt selectedPos = 0.obs;
   RxInt testAdminCommission = 0.obs;
+  RxBool walletApplied = false.obs;
 
   var specialist = Rxn<Specialist>();
 
@@ -77,16 +80,21 @@ class AddBookingController extends GetxController {
     print('object==>>>$bookingAmount');
 
     setLoading();
-    var payload = {'amount': bookingAmount, 'customer_id': user.value!.id!};
+    var payload =
+    {'amount': "$bookingAmount", 'customer_id': user.value!.id!};
     var res = await api.postRequest(AppUrls.createPayment, payload);
     createPaymentModel.value = CreatePaymentModel.fromJson(res);
     setLoading();
 
     if (createPaymentModel.value?.result != null) {
       var orderId = createPaymentModel.value!.result!.orderId;
-      var paymentSessionId =
-          createPaymentModel.value!.result!.paymentSessionId!;
-      pay(orderId, paymentSessionId);
+      if (createPaymentModel.value!.payment!) {
+        var paymentSessionId =
+        createPaymentModel.value!.result!.paymentSessionId!;
+        pay(orderId, paymentSessionId);
+      } else {
+        addBooking();
+      }
     } else {
       showSnackbar('Message', createPaymentModel.value!.message);
     }
@@ -94,7 +102,8 @@ class AddBookingController extends GetxController {
   }
 
   addBooking() async {
-      LabController labController = Get.find();
+    LabController labController = Get.find();
+    WalletController walletController = Get.find();
     var testId = "";
     var labId = "";
     num multiTestLabPrice = 0;
@@ -107,33 +116,37 @@ class AddBookingController extends GetxController {
         multiTestLabPrice += test.price!;
       }
       testId = testIds.length > 1 ? testIds.join(",") : testIds.first;
-    }else{
+    } else {
       testId = test.value!.test!.id!;
       labId = priceList.value?.labId ?? lab.value!.id!;
     }
 
     var ids = specialist.value == null
         ? {
-            "lab": labId,
-            "test": testId,
-          }
+      "lab": labId,
+      "test": testId,
+    }
         : {'specialist': specialist.value!.id};
 
     var params = {
       ...ids,
       "user": user.value!.id!,
       "tax": '5',
+      "useWallet": walletApplied.isTrue ? "y" : "n",
+      "balance": walletApplied.isTrue
+          ? (walletController.wallet.value?.result?.totalAmount ?? "0")
+          : "",
       'price': (specialist.value != null)
           ? specialist.value!.price!
           : (priceList.value != null)
-              ? priceList.value!.price
-              : multiTests.isTrue
+          ? priceList.value!.price
+          : multiTests.isTrue
           ? multiTestLabPrice
-          :test.value!.price!,
+          : test.value!.price!,
       'patientName': user.value?.name ?? "",
       'collectionType': selectedPos.value.toString(),
       'collectionAddress':
-          selectedPos.value == 0 ? "" : addressController.value.text,
+      selectedPos.value == 0 ? "" : addressController.value.text,
       'collectionDate': Constant.changeDateFormat(
           selectedPos.value == 0
               ? DateTime.now().toString()
@@ -142,11 +155,16 @@ class AddBookingController extends GetxController {
           format: selectedPos.value == 0 ? 'yyyy-MM-dd hh:mm' : 'dd MMM yyyy'),
       'collectionSlot': selectedPos.value == 0
           ? Constant.changeDateFormat(DateTime.now().toString(),
-              changeInto: "hh:mm")
+          changeInto: "hh:mm")
           : timeController.value.text,
-      'paymentGateway': 'CashFree',
+      'paymentGateway': createPaymentModel.value!.payment!
+          ? 'CashFree'
+          : "Wallet",
       'paymentGatewayTxnId':
-          createPaymentModel.value!.result!.paymentSessionId!,
+      (createPaymentModel.value?.result?.paymentSessionId == null ||
+          createPaymentModel.value!.result!.paymentSessionId!.isEmpty)
+          ? " "
+          : createPaymentModel.value!.result!.paymentSessionId,
       'orderid': createPaymentModel.value!.result!.orderId
     };
 
@@ -184,7 +202,7 @@ class AddBookingController extends GetxController {
   }
 
   CFSession? createSession(orderId, paymentSessionId) {
-    CFEnvironment environment = CFEnvironment.PRODUCTION;
+    CFEnvironment environment = CFEnvironment.SANDBOX;
     // Constant.printValue("Session id is : $paymentSessionId");
     try {
       var session = CFSessionBuilder()
@@ -208,7 +226,7 @@ class AddBookingController extends GetxController {
       components.add(CFPaymentModes.WALLET);
 
       var paymentComponent =
-          CFPaymentComponentBuilder().setComponents(components).build();
+      CFPaymentComponentBuilder().setComponents(components).build();
 
       var theme = CFThemeBuilder()
           .setNavigationBarBackgroundColorColor("#128C7E")
@@ -232,7 +250,7 @@ class AddBookingController extends GetxController {
     try {
       var session = createSession(orderId, paymentSessionId);
       var cfWebCheckout =
-          CFWebCheckoutPaymentBuilder().setSession(session!).build();
+      CFWebCheckoutPaymentBuilder().setSession(session!).build();
       cfPaymentGatewayService.doPayment(cfWebCheckout);
     } on CFException catch (e) {
       Constant.printValue((e.message));

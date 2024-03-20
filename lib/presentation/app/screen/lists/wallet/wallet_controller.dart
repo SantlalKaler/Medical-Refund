@@ -27,6 +27,12 @@ class WalletController extends GetxController {
     update();
   }
 
+  @override
+  void onInit() {
+    getUser();
+    super.onInit();
+  }
+
   getUser() async {
     user.value = await PrefData.getUser();
     update();

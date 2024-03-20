@@ -90,7 +90,7 @@ class _LabDetailScreenState extends State<LabDetailScreen> {
                                   getButton(
                                     context,
                                     accentColor,
-                                    'Select Lab to proceed',
+                                    'Select Test to proceed',
                                     Colors.white,
                                     () {
                                       if (controller.selectedTests.isEmpty) {

@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:lab_test_app/data/app_urls.dart';
 import 'package:lab_test_app/presentation/app/screen/lists/labDetail/lab_controller.dart';
 import 'package:lab_test_app/presentation/app/screen/lists/tests/test_detail_screen.dart';
+import 'package:lab_test_app/presentation/app/screen/lists/wallet/wallet_controller.dart';
 
 import '../../../../../domain/model/LabDetailsModel.dart';
 import '../../../../base/color_data.dart';
@@ -30,6 +31,7 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
   }
 
   late final AddBookingController controller;
+  late final WalletController walletController;
   final formGlobalKey = GlobalKey<FormState>();
 
   num testPendingAmount = 0;
@@ -47,6 +49,10 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
     super.initState();
     Get.delete<AddBookingController>();
     controller = Get.put(AddBookingController());
+
+    walletController = Get.put(WalletController());
+    walletController.getWallet();
+
     var args = Get.arguments;
     if (args != null) {
       Constant.printValue(args);
@@ -72,14 +78,15 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
 
   List visit = ['Visit Lab', 'Visit Home'];
 
-  setSingleTestPrice(){
+  setSingleTestPrice() {
     testBookingPrice = controller.test.value?.bookingPrice ?? 0;
     testPrice = controller.test.value?.priceBefore ?? 0;
     payOnly = controller.test.value?.price ?? 0;
-    mrWillPay = ((controller.test.value?.priceBefore ?? 0) - (controller.test.value?.price ?? 0));
+    mrWillPay = ((controller.test.value?.priceBefore ?? 0) -
+        (controller.test.value?.price ?? 0));
   }
 
-  setMultiTestPrice(){
+  setMultiTestPrice() {
     // when data come from lab details page to book
     if (controller.multiTests.isTrue) {
       for (var test in labController.selectedTests) {
@@ -170,6 +177,16 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
                   getVerSpace(20.h),
                   buildTotalAmountRow(),
                   getVerSpace(20.h),
+                  Obx(() => CheckboxListTile(
+                      title: Text(
+                          "Use Wallet (Rs.${walletController.wallet.value?.result?.totalAmount ?? "0"})"),
+                      controlAffinity: ListTileControlAffinity.leading,
+                      value: controller.walletApplied.value,
+                      onChanged: (value) {
+                        if (value != null) {
+                          controller.walletApplied.value = value;
+                        }
+                      })),
                   buildPlaceOrderButton(
                       context, isTestBooking ? pendingAmount : bookingPrice),
                   getVerSpace(20.h),
@@ -267,33 +284,37 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
 
   Widget buildPlaceOrderButton(BuildContext context, bookinAmount) {
     Constant.printValue("Booking Amount in button $bookinAmount");
-    return GetBuilder<AddBookingController>(
-        init: AddBookingController(),
-        builder: (controller) {
-          return controller.loading.value
-              ? showLoading()
-              : getButton(
-                  context,
-                  accentColor,
-                  'Place Order ${Constant.getRuppee(testBookingPrice)}',
-                  Colors.white,
-                  () {
-                    if (controller.selectedPos.value == 1 &&
-                        formGlobalKey.currentState!.validate()) {
-                      //controller.addBooking();
-                      controller.createPayment(testBookingPrice);
-                    }
-                    if (controller.selectedPos.value == 0) {
-                      controller.createPayment(testBookingPrice);
-                      //controller.addBooking();
-                    }
-                  },
-                  18.sp,
-                  weight: FontWeight.w700,
-                  buttonHeight: 60.h,
-                  borderRadius: BorderRadius.circular(22.h),
-                ).marginSymmetric(horizontal: 20.h);
-        });
+    return Obx(() {
+      num newPrice = testBookingPrice;
+      if (controller.walletApplied.isTrue) {
+        num remainingPrice = testBookingPrice -
+            (walletController.wallet.value?.result?.totalAmount ?? 0);
+        if (remainingPrice <= 0) {
+          newPrice = 0;
+        } else {
+          newPrice = remainingPrice;
+        }
+      }
+      return controller.loading.value
+          ? showLoading()
+          : getButton(
+              context,
+              accentColor,
+              'Place Order ${Constant.getRuppee(newPrice)}',
+              Colors.white,
+              () {
+                if ((controller.selectedPos.value == 1 &&
+                        formGlobalKey.currentState!.validate()) ||
+                    controller.selectedPos.value == 0) {
+                  controller.createPayment(newPrice);
+                }
+              },
+              18.sp,
+              weight: FontWeight.w700,
+              buttonHeight: 60.h,
+              borderRadius: BorderRadius.circular(22.h),
+            ).marginSymmetric(horizontal: 20.h);
+    });
   }
 
   // Widget buildDateTimeWidget(BuildContext context) {

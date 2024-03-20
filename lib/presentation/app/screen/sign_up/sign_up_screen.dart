@@ -123,6 +123,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
             // height: 60.h,
             isprefix: true,
             length: 10,
+            validator: (value) {
+              if (value!.isNotEmpty && value.length == 10) {
+                return null;
+              } else {
+                return 'Please enter valid mobile';
+              }
+            },
             /*prefix: GestureDetector(
               onTap: () {
                 Get.toNamed(Routes.selectCountryRoute);
@@ -147,7 +154,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         getVerSpace(20.h),
         getDefaultTextFiledWithLabel(
           context,
-          "Referral Code (optional)",
+          "Referral Code(Optional)",
           signupController.referralCodeController.value,
           // height: 60.h,
           // inputFormatters: <TextInputFormatter>[

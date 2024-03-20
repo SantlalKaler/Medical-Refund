@@ -103,7 +103,9 @@ class _TabTestReportsState extends State<TabTestReports> {
     List<Booking> testReports = [];
 
     for (var report in latestReportList) {
-      if (report.test != null && report.test!.isNotEmpty) {
+      if (report.test != null &&
+          report.test!.isNotEmpty &&
+          report.report?.isNotEmpty == true) {
         testReports.add(report);
       }
     }

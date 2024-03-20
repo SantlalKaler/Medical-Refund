@@ -24,6 +24,7 @@ class HomeController extends GetxController {
   final defaultCity = Rxn<ct.Result>();
   var homeData = Rxn<Result>();
   var searchData = Rxn<List<SearchData>>();
+  RxInt currentIndex= 0.obs;
 
   @override
   void onInit() {
@@ -39,6 +40,12 @@ class HomeController extends GetxController {
 
   isLoading() {
     loading.value = !loading.value;
+    update();
+  }
+
+
+  setCurrentIndex(index) {
+    currentIndex.value = index;
     update();
   }
 
