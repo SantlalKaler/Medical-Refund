@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -8,6 +9,7 @@ import 'package:lab_test_app/presentation/base/view_utils.dart';
 import '../../../../base/color_data.dart';
 import '../../../../base/constant.dart';
 import '../../../../base/widget_utils.dart';
+import '../../../routes/app_routes.dart';
 
 class MyWalletScreen extends StatefulWidget {
   const MyWalletScreen({Key? key}) : super(key: key);
@@ -63,14 +65,7 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
                               getCustomFont(
                                   "Wallet Transactions", 20.sp, Colors.black, 1,
                                   fontWeight: FontWeight.w700),
-                              if (transactions == null ||
-                                  transactions.isEmpty == true)
-                                Center(
-                                  heightFactor: 5.0,
-                                  child: getCustomFont("No transactions found",
-                                      20.sp, greyFontColor, 1,
-                                      fontWeight: FontWeight.w500),
-                                ),
+                              getVerSpace(20.h),
                               buildWalletTransaction(context)
                             ],
                           )),
@@ -112,57 +107,126 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
   }
 
   Widget buildButtonView(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        getButton(
-          context,
-          accentColor,
-          'Request Withdrawal',
-          Colors.white,
-          () {
-            if (controller.wallet.value?.result?.totalAmount == null ||
-                controller.wallet.value!.result!.totalAmount! < 500) {
-              showSnackbar('Alert!',
-                  'Amount must be more than Rs 500, You can only use this amount for bookings.');
-              return;
-            } else if (controller.user.value?.panNumber?.isEmpty == true) {
-              showSnackbar('Alert!',
-                  'Please upload or add your pan info in your profile.');
-              return;
-            }
-            showDialog(
-                context: context,
-                builder: (context) {
-                  return requestWithdrawalDialog();
-                });
-          },
-          18.sp,
-          weight: FontWeight.w700,
-          buttonHeight: 30.h,
-          buttonWidth: 200.h,
-          borderRadius: BorderRadius.all(Radius.circular(10.h)),
-        ),
-        /*   getButton(
-          context,
-          accentColor,
-          'Request Payout',
-          Colors.white,
-          () {},
-          18.sp,
-          weight: FontWeight.w700,
-          buttonHeight: 30.h,
-          buttonWidth: 150.h,
-          borderRadius: BorderRadius.all(Radius.circular(10.h)),
-        ),*/
-      ],
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Expanded(
+            child: getButton(
+              context,
+              accentColor,
+              'Request \nWithdrawal',
+              Colors.white,
+              () {
+                if (controller.wallet.value?.result?.totalAmount == null ||
+                    controller.wallet.value!.result!.totalAmount! < 500) {
+                  showSnackbar('Alert!',
+                      'Amount must be more than Rs 500, You can only use this amount for bookings.');
+                  return;
+                } else if (controller.user.value?.panNumber?.isEmpty == true) {
+                  showSnackbar('Alert!',
+                      'Please upload or add your pan info in your profile.');
+                  return;
+                }
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return requestWithdrawalDialog();
+                    });
+              },
+              18.sp,
+              weight: FontWeight.w600,
+              buttonHeight: 60.h,
+              buttonWidth: 200.h,
+              borderRadius: BorderRadius.all(Radius.circular(10.h)),
+            ),
+          ),
+          getHorSpace(10),
+          Expanded(
+            child: getButton(
+              context,
+              accentColor,
+              'Linked \nAccount',
+              Colors.white,
+              () {
+                Constant.moveToNext(Routes.bankDetailsScreenRoute);
+              },
+              18.sp,
+              weight: FontWeight.w600,
+              buttonHeight: 60.h,
+              buttonWidth: 200.h,
+              borderRadius: BorderRadius.all(Radius.circular(10.h)),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget buildWalletTransaction(BuildContext context) {
     var transactions = controller.wallet.value?.result?.transactions;
 
-    return SingleChildScrollView(
+    return transactions?.isEmpty == true
+        ? Center(
+            heightFactor: 5.0,
+            child: getCustomFont(
+                "No transactions found", 20.sp, greyFontColor, 1,
+                fontWeight: FontWeight.w500),
+          )
+        : ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: transactions!.length,
+            itemBuilder: (context, index) {
+              var transaction = transactions[index];
+              var transactionIn = transaction.type == "IN" ? true : false;
+              return ListTile(
+                titleAlignment: ListTileTitleAlignment.center,
+                leading: CircleAvatar(
+                  backgroundColor: Colors.transparent,
+                  child: Icon(
+                    transactionIn ? Icons.arrow_downward : Icons.arrow_upward,
+                    color: transactionIn ? accentColor : Colors.orangeAccent,
+                  ),
+                ),
+                horizontalTitleGap: 5,
+                title: Padding(
+                  padding: const EdgeInsets.only(bottom: 5.0),
+                  child: Text(transactionIn
+                      ? "Received From ${transaction.booking?.users?.name}"
+                      : "Transfer to Bank"),
+                ),
+                subtitle: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    //if (transactionIn) Text("For : ${transaction.booking?.id}"),
+                    Text(Constant.changeDateFormat(transaction.createdAt!,
+                        changeInto: "dd MMMM yyyy, hh:mm")),
+                    const Divider(
+                      thickness: 1,
+                    )
+                  ],
+                ),
+                trailing: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                        "${transactionIn ? "+" : "-"}Rs. ${transaction.amount.toString()}"),
+                    Text(
+                      (transaction.type == "IN" || transaction.type == "OUT") ? "Success" : "Pending" ?? "",
+                      style: TextStyle(
+                          color: (transaction.type == "IN" || transaction.type == "OUT")
+                              ? Colors.green
+                                  : Colors.red),
+                    )
+                  ],
+                ),
+              );
+            },
+          );
+    SingleChildScrollView(
       child: getShadowDefaultContainer(
           width: double.infinity,
           color: Colors.white,

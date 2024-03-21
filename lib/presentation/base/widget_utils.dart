@@ -186,7 +186,7 @@ Widget getButton(BuildContext context, Color bgColor, String text,
         children: [
           (isIcon) ? getSvgImage(image!) : getHorSpace(0),
           (isIcon) ? getHorSpace(15.h) : getHorSpace(0),
-          getCustomFont(text, fontsize, textColor, 1,
+          getCustomFont(text, fontsize, textColor, 2,
               textAlign: TextAlign.center,
               fontWeight: weight,
               fontFamily: Constant.fontsFamily)

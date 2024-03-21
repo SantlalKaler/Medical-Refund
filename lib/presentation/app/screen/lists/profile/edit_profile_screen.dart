@@ -173,7 +173,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       });
                     }),
                     getVerSpace(20.h),
-                    getDefaultTextFiledWithLabel(
+                    /*getDefaultTextFiledWithLabel(
                       context,
                       "Bank Name",
                       profileController.bankNameController.value,
@@ -201,7 +201,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       profileController.ifscCodeController.value,
                       height: 60.h,
                     ),
-                    getVerSpace(20.h),
+                    getVerSpace(20.h),*/
                     getDefaultTextFiledWithLabel(
                       context,
                       "Enter pan number",

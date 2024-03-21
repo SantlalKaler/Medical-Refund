@@ -42,6 +42,7 @@ abstract class Routes {
   static const editReminderScreenRoute = Paths.editReminderScreenPath;
   static const testsPanelScreenRoute = Paths.testsPanelScreenPath;
   static const myNetworksScreenRoute = Paths.myNetworks;
+  static const bankDetailsScreenRoute = Paths.bankDetails;
 }
 
 abstract class Paths {
@@ -88,4 +89,5 @@ abstract class Paths {
   static const editReminderScreenPath = "/EditReminderScreen";
   static const testsPanelScreenPath = "/TestsPanelScreen";
   static const myNetworks = "/MyNetworks";
+  static const bankDetails = "/bankDetails";
 }

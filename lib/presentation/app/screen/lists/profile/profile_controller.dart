@@ -274,4 +274,33 @@ class ProfileController extends GetxController {
           : Routes.homeScreenRoute);
     }
   }
+
+  updateBankInfo(User user, String bankName, String accNumber,
+      String accHolderName, String ifsc) async {
+    try {
+      isLoading();
+      var data = {
+        "id": user.id,
+        "dob": user.dobDate,
+        "name": user.name,
+        "email": user.email,
+        "panNumber": user.panNumber,
+        "bankName": bankName,
+        "accNumber": accNumber,
+        "accHolderName": accHolderName,
+        "ifsc": ifsc,
+      };
+
+      var res = await api.postRequest(AppUrls.updateProfile, data);
+
+      var updateProfile = UpdateProfileModel.fromJson(res);
+      showSnackbar("Message", updateProfile.message);
+
+      if (updateProfile.status == Status.success.name) {
+        Constant.backToPrev();
+      }
+    } finally {
+      isLoading();
+    }
+  }
 }

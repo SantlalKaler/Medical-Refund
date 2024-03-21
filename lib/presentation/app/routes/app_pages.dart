@@ -3,6 +3,7 @@ import 'package:lab_test_app/presentation/app/screen/home/home_screen_specialist
 import 'package:lab_test_app/presentation/app/screen/lists/boooking/my_bookings.dart';
 import 'package:lab_test_app/presentation/app/screen/lists/contact_us_screen.dart';
 import 'package:lab_test_app/presentation/app/screen/lists/privacy_policy_n_terms.dart';
+import 'package:lab_test_app/presentation/app/screen/lists/wallet/bank_details_screen.dart';
 import 'package:lab_test_app/presentation/app/screen/lists/wallet/wallet_screen.dart';
 import '../screen/home/home_screen.dart';
 import '../screen/intro/intro_screen.dart';
@@ -89,5 +90,6 @@ class AppPages {
     Routes.reminderScreenRoute: (context) => const ReminderScreen(),
     Routes.testsPanelScreenRoute: (context) => const TestsPanelScreen(),
     Routes.myNetworksScreenRoute: (context) => const MyNetworkScreen(),
+    Routes.bankDetailsScreenRoute: (context) => const BankDetailsScreen(),
   };
 }

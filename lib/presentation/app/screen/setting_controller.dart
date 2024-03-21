@@ -65,7 +65,7 @@ class SettingController extends GetxController {
   }
 
   getIntro() async {
-    // bool isIntro = await PrefData.getIsIntro();
+     bool isIntro = await PrefData.getIsIntro();
     bool isLogin = await PrefData.getIsSignIn();
     bool isSpecialist = await PrefData.getIsSpecialist();
     Constant.printValue(isLogin);
@@ -80,7 +80,7 @@ class SettingController extends GetxController {
           : Routes.homeScreenRoute);
     } else {
       //Constant.moveToNext(Routes.loginRoute);
-      Constant.moveToNext(Routes.introRoute);
+      Constant.moveToNext(isIntro ? Routes.introRoute : Routes.loginRoute);
     }
   }
 
