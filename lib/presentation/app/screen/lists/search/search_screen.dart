@@ -7,6 +7,7 @@ import '../../../../base/constant.dart';
 import '../../../../base/widget_utils.dart';
 import '../../../data/data_file.dart';
 import '../../../models/model_nearby_lab.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../models/model_recent_search.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -30,13 +31,18 @@ class SearchScreenState extends State<SearchScreen> {
   @override
   void initState() {
     Get.delete<SearcController>();
-    controller = Get.put(SearcController());
-    controller.changeSearchByValue('Lab');
+    controller = Get.put(
+        SearcController()); /*
+    controller.getSearchByList(context);
+    controller.changeSearchByValue(AppLocalizations.of(context)!.lab);*/
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (controller.searchByList.isEmpty) {
+      controller.getSearchByList(context);
+    }
     initializeScreenSize(context);
     return WillPopScope(
       onWillPop: () async {
@@ -56,8 +62,10 @@ class SearchScreenState extends State<SearchScreen> {
               buildAppBar(),
               getVerSpace(20.h),
               getSearchTextFieldWidget(
-                  context, 60.h, 'search...', controller.searchController.value,
-                  (value1) {
+                  context,
+                  60.h,
+                  '${AppLocalizations.of(context)!.search}...',
+                  controller.searchController.value, (value1) {
                 if (value1 != "") {
                   controller.validate();
                 }
@@ -127,7 +135,7 @@ class SearchScreenState extends State<SearchScreen> {
                 init: SearcController(),
                 builder: (controller) {
                   return getCustomFont(
-                      "Search for ${controller.searchByValue.value}",
+                      "${AppLocalizations.of(context)!.search} ${controller.searchByValue.value}",
                       24.sp,
                       Colors.black,
                       1,

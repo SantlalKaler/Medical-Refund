@@ -8,6 +8,7 @@ import 'package:lab_test_app/presentation/app/screen/sign_up/signup_controller.d
 
 import '../../../base/color_data.dart';
 import '../../../base/constant.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../base/widget_utils.dart';
 import '../../routes/app_routes.dart';
 
@@ -58,8 +59,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 Expanded(
                     child: Column(
                   children: [
-                    loginHeader("Sign Up",
-                        "Use your details for Create a new account!"),
+                    loginHeader(AppLocalizations.of(context)!.signUp,
+                        AppLocalizations.of(context)!.signupDesc),
                     getVerSpace(30.h),
                     buildTextFieldWidget(context),
                     getVerSpace(40.h),
@@ -78,8 +79,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Widget buildLoginButton(BuildContext context) {
-    return getRichText("Already have an account / ", Colors.black,
-        FontWeight.w500, 17.sp, "Login", accentColor, FontWeight.w700, 16.sp,
+    return getRichText("${AppLocalizations.of(context)!.alreadyHaveAnAccount} / ", Colors.black,
+        FontWeight.w500, 17.sp, AppLocalizations.of(context)!.logIn, accentColor, FontWeight.w700, 16.sp,
         txtHeight: 1.41.h, function: () {
       Constant.sendToNext(context, Routes.loginRoute);
     });
@@ -90,7 +91,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         init: SignupController(),
         builder: (controller) => controller.loading.value
             ? showLoading()
-            : getButton(context, accentColor, "Sign Up", Colors.white, () {
+            : getButton(context, accentColor, AppLocalizations.of(context)!.signUp, Colors.white, () {
                 if (signUpGlobalKey.currentState!.validate()) {
                   signupController.validate();
                 }
@@ -106,19 +107,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
       children: [
         getDefaultTextFiledWithLabel(
           context,
-          "Enter full name",
+          AppLocalizations.of(context)!.enterFullName,
           signupController.nameController.value,
           // height: 60.h,
           validator: (email) {
             if (email!.isNotEmpty) {
               return null;
             } else {
-              return 'Please enter full name';
+              return AppLocalizations.of(context)!.enterFullName;
             }
           },
         ),
         getVerSpace(20.h),
-        getDefaultTextFiledWithLabel(context, "Enter phone number",
+        getDefaultTextFiledWithLabel(context, AppLocalizations.of(context)!.enterphonenumber,
             signupController.phoneController.value,
             // height: 60.h,
             isprefix: true,
@@ -127,7 +128,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               if (value!.isNotEmpty && value.length == 10) {
                 return null;
               } else {
-                return 'Please enter valid mobile';
+                return AppLocalizations.of(context)!.enterphonenumber;
               }
             },
             /*prefix: GestureDetector(
@@ -154,7 +155,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         getVerSpace(20.h),
         getDefaultTextFiledWithLabel(
           context,
-          "Referral Code(Optional)",
+          AppLocalizations.of(context)!.referralCode,
           signupController.referralCodeController.value,
           // height: 60.h,
           // inputFormatters: <TextInputFormatter>[
@@ -182,7 +183,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
             // getHorSpace(10.h),
             getCustomFont(
-                'I agree with Terms & Condition', 17.sp, Colors.black, 1,
+                AppLocalizations.of(context)!.iagreewithTermsAndCondition, 17.sp, Colors.black, 1,
                 fontWeight: FontWeight.w500),
           ],
         ),

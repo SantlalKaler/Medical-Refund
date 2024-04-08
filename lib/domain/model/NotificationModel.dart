@@ -43,12 +43,16 @@ Result resultFromJson(String str) => Result.fromJson(json.decode(str));
 String resultToJson(Result data) => json.encode(data.toJson());
 class Result {
   Result({
+      String? from, 
+      bool? read, 
       String? id, 
       String? users, 
       String? message, 
       String? createdAt, 
       String? updatedAt, 
       num? v,}){
+    _from = from;
+    _read = read;
     _id = id;
     _users = users;
     _message = message;
@@ -58,6 +62,8 @@ class Result {
 }
 
   Result.fromJson(dynamic json) {
+    _from = json['from'];
+    _read = json['read'];
     _id = json['_id'];
     _users = json['users'];
     _message = json['message'];
@@ -65,25 +71,33 @@ class Result {
     _updatedAt = json['updatedAt'];
     _v = json['__v'];
   }
+  String? _from;
+  bool? _read;
   String? _id;
   String? _users;
   String? _message;
   String? _createdAt;
   String? _updatedAt;
   num? _v;
-Result copyWith({  String? id,
+Result copyWith({  String? from,
+  bool? read,
+  String? id,
   String? users,
   String? message,
   String? createdAt,
   String? updatedAt,
   num? v,
-}) => Result(  id: id ?? _id,
+}) => Result(  from: from ?? _from,
+  read: read ?? _read,
+  id: id ?? _id,
   users: users ?? _users,
   message: message ?? _message,
   createdAt: createdAt ?? _createdAt,
   updatedAt: updatedAt ?? _updatedAt,
   v: v ?? _v,
 );
+  String? get from => _from;
+  bool? get read => _read;
   String? get id => _id;
   String? get users => _users;
   String? get message => _message;
@@ -93,6 +107,8 @@ Result copyWith({  String? id,
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
+    map['from'] = _from;
+    map['read'] = _read;
     map['_id'] = _id;
     map['users'] = _users;
     map['message'] = _message;

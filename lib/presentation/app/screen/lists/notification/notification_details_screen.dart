@@ -2,32 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lab_test_app/presentation/app/screen/lists/notification/notification_controller.dart';
-import 'package:lab_test_app/presentation/app/screen/lists/notification/notification_details_screen.dart';
 
 import '../../../../base/color_data.dart';
 import '../../../../base/constant.dart';
 import '../../../../base/widget_utils.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:lab_test_app/domain/model/NotificationModel.dart';
 
-class NotificationScreen extends StatefulWidget {
-  const NotificationScreen({Key? key}) : super(key: key);
+class NotificationDetailsScreen extends StatefulWidget {
+  const NotificationDetailsScreen({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return _NotificationScreenState();
+    return _NotificationDetailsScreenState();
   }
 }
 
-class _NotificationScreenState extends State<NotificationScreen> {
-  late final NotificationController controller;
+class _NotificationDetailsScreenState extends State<NotificationDetailsScreen> {
+  NotificationController controller = Get.find();
 
   @override
   void initState() {
     super.initState();
-    //Get.delete<NotificationController>();
-    controller = Get.put(NotificationController());
-    controller.getUser();
+    controller.readNotification();
   }
 
   void backClick() {
@@ -36,6 +32,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Result notification = controller
+        .notifications!.value!.result![controller.selectedNotification.value];
     return WillPopScope(
       onWillPop: () async {
         backClick();
@@ -45,27 +43,28 @@ class _NotificationScreenState extends State<NotificationScreen> {
         backgroundColor: Colors.white,
         body: SafeArea(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               getVerSpace(20.h),
               getBackAppBar(context, () {
                 backClick();
-              }, AppLocalizations.of(context)!.notifications),
-              getVerSpace(20.h),
-              controller.loading.value
-                  ? showLoading()
-                  : Expanded(
-                      child: GetBuilder<NotificationController>(
-                          init: NotificationController(),
-                          builder: (controller) {
-                            return controller.loading.isTrue
-                                ? showLoading()
-                                : (controller.notifications.value?.result
-                                            ?.isEmpty ==
-                                        true)
-                                    ? buildNoDataWidget(context)
-                                    : buildNotificationList(controller
-                                        .notifications.value!.result!);
-                          }))
+              }, 'Notification'),
+              SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    if (notification.from != null && notification.from!.isNotEmpty)
+                      Text(
+                        notification.from!,
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w600),
+                      ),
+                    getVerSpace(20.h),
+                    Text(notification.message ?? "")
+                  ],
+                ),
+              )
             ],
           ),
         ),
@@ -81,21 +80,19 @@ class _NotificationScreenState extends State<NotificationScreen> {
       itemBuilder: (context, index) {
         Result notification = notificationList[index];
         return ListTile(
-          onTap: (){
-            controller.selectedNotification.value = index;
-            Get.to(() => const NotificationDetailsScreen());
-          },
+          onTap: () {},
           selected: (notification.read ?? false) ? false : true,
           title: (notification.from == null || notification.from!.isEmpty)
               ? const SizedBox.shrink()
               : Text(notification.from!),
-          subtitle: Text(notification.message ?? "", maxLines: 2,),
+          subtitle: Text(
+            notification.message ?? "",
+            maxLines: 2,
+          ),
           trailing: Text(
             Constant.changeDateFormat(notification.createdAt!,
                 changeInto: "dd/MM/yy, hh:mm"),
-            style: const TextStyle(
-              fontSize: 11
-            ),
+            style: const TextStyle(fontSize: 11),
           ),
         );
         return Row(

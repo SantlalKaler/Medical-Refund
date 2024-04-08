@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:lab_test_app/data/app_urls.dart';
 import 'package:lab_test_app/presentation/app/screen/my_networks/network_controller.dart';
 import '../../../base/color_data.dart';
@@ -41,7 +42,7 @@ class _MyNetworkScreenState extends State<MyNetworkScreen> {
               children: [
                 getBackAppBar(context, () {
                   backClick(context);
-                }, 'My Networks'),
+                }, AppLocalizations.of(context)!.myNetwork),
               ],
             ),
             getVerSpace(20.h),
@@ -57,9 +58,8 @@ class _MyNetworkScreenState extends State<MyNetworkScreen> {
                       ? showLoading()
                       : (controller.networks.value?.result?.isEmpty == true)
                           ? Center(
-                    heightFactor: 50.h,
                               child: getCustomFont(
-                                  "No Network found", 17.sp, greyFontColor, 1),
+                                  AppLocalizations.of(context)!.noNetworkFound, 17.sp, greyFontColor, 1),
                             )
                           : buildYourTeamView(context);
                 }),
@@ -135,17 +135,20 @@ class _MyNetworkScreenState extends State<MyNetworkScreen> {
         childAspectRatio: width / height,
         children: List.generate(network!.length, (index) {
           var user = network[index];
-          return Column(
-            children: [
-              getCircleNetworkImage(
-                  context, "${AppUrls.imageBaseUrl}${user.user!.image}", 100.0),
-              getVerSpace(4.h),
-              getCustomFont(user.user!.name!, 18.sp, Colors.black, 1,
-                  fontWeight: FontWeight.w700, txtHeight: 1.4.h),
-              getVerSpace(4.h),
-              getCustomFont(user.user!.email!, 15.sp, greyFontColor, 1,
-                  fontWeight: FontWeight.w500, txtHeight: 1.4.h),
-            ],
+          return Padding(
+            padding: const EdgeInsets.only(left : 10),
+            child: Column(
+              children: [
+                getCircleNetworkImage(
+                    context, "${AppUrls.imageBaseUrl}${user.user!.image}", 100.0),
+                getVerSpace(4.h),
+                getCustomFont(user.user!.name!, 18.sp, Colors.black, 1,
+                    fontWeight: FontWeight.w700, txtHeight: 1.4.h),
+                getVerSpace(4.h),
+                getCustomFont(user.user!.mobile!, 15.sp, greyFontColor, 1,
+                    fontWeight: FontWeight.w500, txtHeight: 1.4.h),
+              ],
+            ),
           );
         }),
       ),

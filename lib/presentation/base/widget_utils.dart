@@ -764,17 +764,10 @@ Widget getCircleNetworkImage(BuildContext context, String imgName, double size,
       width: size,
       height: size,
       child: CircleAvatar(
-        //borderRadius: BorderRadius.all(Radius.circular(size / 2)),
-        //(fileImage) ? Image.file(File(imgName)) : getAssetImage(imgName)
         backgroundImage: NetworkImage(imgName),
         radius: 90,
+        child: getSvgImage("profile_active.svg"),
       )
-      /* ClipRRect(
-      borderRadius: BorderRadius.all(Radius.circular(size / 2)),
-      child: (fileImage)
-          ? Image.file(File(imgName))
-          : getNetworkImage(imgName, boxFit: BoxFit.fill),
-    ),*/
       );
 }
 

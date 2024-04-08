@@ -5,6 +5,7 @@ import 'package:lab_test_app/data/app_urls.dart';
 import 'package:lab_test_app/domain/model/BookingModel.dart';
 import 'package:lab_test_app/presentation/app/screen/lists/boooking/booking_controller.dart';
 import '../../../../base/constant.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../../base/widget_utils.dart';
 import '../home_visit/my_home_visit_screen.dart';
 
@@ -50,7 +51,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
               getVerSpace(20.h),
               getBackAppBar(context, () {
                 backClick();
-              }, 'My Bookings'),
+              }, AppLocalizations.of(context)!.booking),
               getVerSpace(20.h),
               GetBuilder<BookingController>(
                   init: BookingController(),

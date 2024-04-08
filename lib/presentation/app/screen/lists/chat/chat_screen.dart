@@ -1,3 +1,4 @@
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -20,7 +21,6 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  List<ModelChat> chattingList = DataFile.getChattingList();
   TextEditingController messageController = TextEditingController();
   late ChatController chatController;
 
@@ -181,7 +181,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget buildMessageTextField(BuildContext context) {
     return getDefaultTextFiledWithLabel(
-        context, 'Type a message', chatController.messageController.value,
+        context,
+        AppLocalizations.of(context)!.typeAMessage,
+        chatController.messageController.value,
         height: 60.h,
         isprefix: true,
         prefix: const Row(

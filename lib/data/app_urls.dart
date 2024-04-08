@@ -24,6 +24,7 @@ class AppUrls {
   static const wallet = "my-wallet";
   static const details = "details";
   static const notifications = "my-notifications";
+  static const readNotification = "/read-notification";
   static const requestWithdrawals = "request-withdrawals";
   static const myNetwork = "my-network";
   static const addBooking = "add-booking";

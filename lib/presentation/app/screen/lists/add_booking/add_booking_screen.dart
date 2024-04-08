@@ -5,8 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lab_test_app/data/app_urls.dart';
 import 'package:lab_test_app/presentation/app/screen/lists/labDetail/lab_controller.dart';
-import 'package:lab_test_app/presentation/app/screen/lists/tests/test_detail_screen.dart';
 import 'package:lab_test_app/presentation/app/screen/lists/wallet/wallet_controller.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../../../domain/model/LabDetailsModel.dart';
 import '../../../../base/color_data.dart';
@@ -76,8 +76,6 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
     }
   }
 
-  List visit = ['Visit Lab', 'Visit Home'];
-
   setSingleTestPrice() {
     testBookingPrice = controller.test.value?.bookingPrice ?? 0;
     testPrice = controller.test.value?.priceBefore ?? 0;
@@ -143,7 +141,7 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
               getVerSpace(20.h),
               getBackAppBar(context, () {
                 backClick();
-              }, 'Add Booking'),
+              }, AppLocalizations.of(context)!.addBooking),
               getVerSpace(20.h),
               Expanded(
                   child: ListView(
@@ -151,8 +149,8 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
                 children: [
                   getCustomFont(
                           controller.specialist.value == null
-                              ? 'Test'
-                              : 'Specialist',
+                              ? AppLocalizations.of(context)!.test
+                              : AppLocalizations.of(context)!.specialist,
                           18.sp,
                           Colors.black,
                           1,
@@ -179,7 +177,7 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
                   getVerSpace(20.h),
                   Obx(() => CheckboxListTile(
                       title: Text(
-                          "Use Wallet (Rs.${walletController.wallet.value?.result?.totalAmount ?? "0"})"),
+                          "${AppLocalizations.of(context)!.useWallet} (Rs.${walletController.wallet.value?.result?.totalAmount ?? "0"})"),
                       controlAffinity: ListTileControlAffinity.leading,
                       value: controller.walletApplied.value,
                       onChanged: (value) {
@@ -205,10 +203,10 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
       children: [
         isTestBooking
             ? getCustomFont(
-                "Booking ${Constant.getRuppee(testBookingPrice)}\n"
-                "Lab price ${Constant.getRuppee(testPrice)}\n"
-                "You pay only at Lab ${Constant.getRuppee(payOnly)}\n"
-                "MR will pay ${Constant.getRuppee(mrWillPay)}",
+                "${AppLocalizations.of(context)!.booking} ${Constant.getRuppee(testBookingPrice)}\n"
+                "${AppLocalizations.of(context)!.lab} ${AppLocalizations.of(context)!.price} ${Constant.getRuppee(testPrice)}\n"
+                "${AppLocalizations.of(context)!.youPayOnlyAtLab}${Constant.getRuppee(payOnly)}\n"
+                "${AppLocalizations.of(context)!.mrWillPay} ${Constant.getRuppee(mrWillPay)}",
                 18.sp,
                 Colors.black,
                 5,
@@ -300,7 +298,7 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
           : getButton(
               context,
               accentColor,
-              'Place Order ${Constant.getRuppee(newPrice)}',
+              '${AppLocalizations.of(context)!.placeOrder} ${Constant.getRuppee(newPrice)}',
               Colors.white,
               () {
                 if ((controller.selectedPos.value == 1 &&
@@ -384,10 +382,15 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
   // }
 
   Widget buildVisitWidget() {
+    List visit = [
+      (AppLocalizations.of(context)!.lab),
+      (AppLocalizations.of(context)!.home),
+    ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        getCustomFont('Visit', 16.sp, Colors.black, 1,
+        getCustomFont(
+            AppLocalizations.of(context)!.visit, 16.sp, Colors.black, 1,
             fontWeight: FontWeight.w700),
         getVerSpace(10.h),
         Row(
@@ -459,7 +462,7 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
             getVerSpace(5.h),
             getDefaultTextFiledWithLabel(
               context,
-              "Enter address",
+              AppLocalizations.of(context)!.enterAddress,
               controller.addressController.value,
               keyboardType: TextInputType.name,
               validator: (address) {
@@ -471,7 +474,8 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
               },
             ),
             getVerSpace(6.h),
-            getCustomFont('Collection Date & Time', 16.sp, Colors.black, 1,
+            getCustomFont(AppLocalizations.of(context)!.collectionDateAndTime,
+                16.sp, Colors.black, 1,
                 fontWeight: FontWeight.w700),
             getVerSpace(12.h),
             getDivider(),
@@ -482,7 +486,9 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
                 Expanded(
                     flex: 1,
                     child: getDefaultTextFiledWithLabel(
-                        context, "Select Date", controller.dateController.value,
+                        context,
+                        AppLocalizations.of(context)!.selectDate,
+                        controller.dateController.value,
                         withSufix: true,
                         isReadonly: true,
                         suffiximage: 'calender.svg',
@@ -515,7 +521,9 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
                 Expanded(
                     flex: 1,
                     child: getDefaultTextFiledWithLabel(
-                        context, "Select Time", controller.timeController.value,
+                        context,
+                        AppLocalizations.of(context)!.selectTime,
+                        controller.timeController.value,
                         withSufix: true,
                         isReadonly: true,
                         keyboardType: TextInputType.none,

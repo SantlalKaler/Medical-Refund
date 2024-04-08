@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:lab_test_app/data/api.dart';
 import 'package:lab_test_app/data/app_urls.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:lab_test_app/domain/model/CityModel.dart' as ct;
 import 'package:lab_test_app/domain/model/SpecialistSearchModel.dart';
 import 'package:lab_test_app/domain/model/TestSearchModel.dart';
@@ -25,8 +26,16 @@ class SearcController extends GetxController {
   String lat = '22.5913113';
   String lng = '88.4234245';
 
-  List<String> searchByList = ['Lab', 'Specialist', 'Test'];
+  List<String> searchByList = [];
 
+  getSearchByList(BuildContext context) {
+    searchByList = [
+      AppLocalizations.of(context)!.lab,
+      AppLocalizations.of(context)!.specialist,
+      AppLocalizations.of(context)!.test
+    ];
+    searchByValue.value = searchByList[0];
+  }
 
   @override
   void onInit() {
@@ -39,8 +48,7 @@ class SearcController extends GetxController {
     update();
   }
 
-
-  getDefaultCity() async{
+  getDefaultCity() async {
     defaultCity.value = await PrefData.getDefaultCity();
     update();
   }
@@ -66,10 +74,10 @@ class SearcController extends GetxController {
     await getDefaultCity();
     isLoading();
     var res = await api.getRequest(AppUrls.labSearch, {
-     /* "lat": lat,
+      /* "lat": lat,
       "lng": lng,*/
       "query": searchController.value.text.trim(),
-      "city":defaultCity.value!.id!
+      "city": defaultCity.value!.id!
     });
 
     isLoading();
@@ -79,7 +87,8 @@ class SearcController extends GetxController {
       showSnackbar("Message", "No Lab found");
     } else {
       searchData.value = labSearch.value!.result!
-          .map((e) => SearchData(e.id!, e.image!, e.name!, e.officeAddress!)).toList();
+          .map((e) => SearchData(e.id!, e.image!, e.name!, e.officeAddress!))
+          .toList();
     }
     update();
   }
@@ -87,38 +96,40 @@ class SearcController extends GetxController {
   searchSpecialist() async {
     isLoading();
     var res = await api.getRequest(AppUrls.specialistSearch, {
-    /*  "lat": lat,
+      /*  "lat": lat,
       "lng": lng,*/
       "query": searchController.value.text.trim(),
-      "city":defaultCity.value!.id!
+      "city": defaultCity.value!.id!
     });
     isLoading();
     specialistSearch.value = SpecialistSearchModel.fromJson(res);
 
     if (specialistSearch.value!.result!.isEmpty) {
       showSnackbar("Message", "No Specialist found");
-    }else {
+    } else {
       searchData.value = specialistSearch.value!.result!
-          .map((e) => SearchData(e.id!, e.image!, e.name!, e.education!)).toList();
+          .map((e) => SearchData(e.id!, e.image!, e.name!, e.education!))
+          .toList();
     }
   }
 
   searchTest() async {
     isLoading();
     var res = await api.getRequest(AppUrls.testSearch, {
-     /* "lat": lat,
+      /* "lat": lat,
       "lng": lng,*/
       "query": searchController.value.text.trim(),
-      "city":defaultCity.value!.id!
+      "city": defaultCity.value!.id!
     });
     isLoading();
     testSearch.value = TestSearchModel.fromJson(res);
 
     if (testSearch.value!.result!.isEmpty) {
       showSnackbar("Message", "No Test found");
-    }else {
+    } else {
       searchData.value = testSearch.value!.result!
-          .map((e) => SearchData(e.id!, e.image!, e.title!, e.shortDesc!)).toList();
+          .map((e) => SearchData(e.id!, e.image!, e.title!, e.shortDesc!))
+          .toList();
     }
   }
 }

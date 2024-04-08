@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:lab_test_app/data/app_urls.dart';
 import 'package:lab_test_app/domain/model/CityModel.dart';
 import 'package:lab_test_app/domain/model/SettingModel.dart';
+import 'package:lab_test_app/presentation/base/locals.dart';
 import 'package:lab_test_app/presentation/base/pref_data.dart';
 
 import '../../../../../data/api.dart';
@@ -26,7 +27,16 @@ class SettingController extends GetxController {
     update();
   }
 
+  saveLocale() async{
+    var locale = await PrefData.getLocale();
+    Constant.printValue("Locale : ${locale}");
+    Get.updateLocale(locale == "0" ? AppLocals.english : locale == "1"
+        ? AppLocals.hindi
+        : AppLocals.punjabi);
+  }
+
   getSettings() async {
+    saveLocale();
     setLoading();
     var res = await api.getRequest(AppUrls.settings, {"": ""});
     settings.value = SettingModel.fromJson(res);
@@ -65,7 +75,7 @@ class SettingController extends GetxController {
   }
 
   getIntro() async {
-     bool isIntro = await PrefData.getIsIntro();
+    bool isIntro = await PrefData.getIsIntro();
     bool isLogin = await PrefData.getIsSignIn();
     bool isSpecialist = await PrefData.getIsSpecialist();
     Constant.printValue(isLogin);
@@ -84,7 +94,7 @@ class SettingController extends GetxController {
     }
   }
 
-  getPageList()async{
+  getPageList() async {
     setLoading();
     var res = await api.getRequestWithoutData(AppUrls.listPage);
     pages.value = ListPageModel.fromJson(res);

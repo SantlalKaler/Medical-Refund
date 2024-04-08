@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:lab_test_app/presentation/app/screen/setting_controller.dart';
 
 import '../../../base/constant.dart';
@@ -43,7 +44,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
               getVerSpace(20.h),
               getBackAppBar(context, () {
                 backClick();
-              }, "Contact Us"),
+              }, AppLocalizations.of(context)!.contactUs),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 10.h),
                 child: GetBuilder<SettingController>(

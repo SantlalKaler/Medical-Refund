@@ -7,6 +7,7 @@ import 'package:lab_test_app/presentation/app/screen/lists/home_visit/my_home_vi
 
 import '../../../../base/color_data.dart';
 import '../../../../base/constant.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../../base/widget_utils.dart';
 import '../../../routes/app_routes.dart';
 import '../../lists/boooking/booking_controller.dart';
@@ -43,7 +44,7 @@ class _TabHomeVisitState extends State<TabHomeVisit> {
     return Column(
       children: [
         getVerSpace(20.h),
-        getBackAppBar(context, () {}, 'Home Visit', withLeading: false),
+        getBackAppBar(context, () {}, AppLocalizations.of(context)!.homeVisit, withLeading: false),
         getVerSpace(20.h),
         Expanded(
             child: Column(
@@ -69,6 +70,7 @@ class _TabHomeVisitState extends State<TabHomeVisit> {
   }
 
   Widget bookingListView() {
+    
     var bookings = controller.myBookings;
     if (controller.isSpecialist.value) {
       return bookings.isEmpty
@@ -204,11 +206,11 @@ Column buildNoDataWidget(BuildContext context) {
     children: [
       getNoDataWidget(
           context,
-          'No Booking Yet!',
-          'Once you book, then \nyou see it listed here.',
+          AppLocalizations.of(context)!.noBookingYet,
+          AppLocalizations.of(context)!.noBookingDesc,
           "no_home_visit_icon.svg",
           withButton: true,
-          btnText: 'Go To Book Test', btnClick: () {
+          btnText: AppLocalizations.of(context)!.goToBookTest, btnClick: () {
         Constant.sendToNext(context, Routes.testsListsScreenRoute);
         // isVisible.value = true;
       }),

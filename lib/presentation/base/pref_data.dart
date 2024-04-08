@@ -104,6 +104,17 @@ class PrefData {
     await getUserSpecialist();
   }
 
+  static saveLocal(String locale)async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("locale", locale);
+  }
+
+  static getLocale() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString("locale") ?? "0";
+  }
+
+
   static Future<Specialist?> getUserSpecialist() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var userInfo = prefs.getString(userSpecialist) ?? '';

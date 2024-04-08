@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
@@ -46,7 +47,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               getVerSpace(20.h),
               getBackAppBar(context, () {
                 backClick();
-              }, 'Settings'),
+              }, AppLocalizations.of(context)!.settings),
               getVerSpace(20.h),
               buildSettingTabList(context)
             ],

@@ -6,12 +6,14 @@ import 'package:lab_test_app/presentation/app/screen/lists/profile/profile_contr
 import 'package:lab_test_app/presentation/app/screen/login/login_screen.dart';
 import 'package:share_plus/share_plus.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../../base/color_data.dart';
 import '../../../../base/constant.dart';
 import '../../../../base/pref_data.dart';
 import '../../../../base/widget_utils.dart';
 import '../../../controller/controller.dart';
 import '../../../routes/app_routes.dart';
+import '../../select_language.dart';
 
 class TabProfile extends StatefulWidget {
   const TabProfile({Key? key}) : super(key: key);
@@ -45,7 +47,7 @@ class _TabProfileState extends State<TabProfile> {
           child: Column(
             children: [
               getVerSpace(20.h),
-              getBackAppBar(context, () {}, 'Profile',
+              getBackAppBar(context, () {}, AppLocalizations.of(context)!.profile,
                   withAction: true,
                   withLeading: false,
                   isDivider: false,
@@ -128,41 +130,54 @@ class _TabProfileState extends State<TabProfile> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          buildDefaultTabWidget('#FFEBF5', 'profile.svg', 'My Profile', () {
+          buildDefaultTabWidget('#FFEBF5', 'profile.svg', AppLocalizations.of(context)!.myProfile, () {
             Constant.sendToNext(context, Routes.myProfileScreenRoute);
           }),
           getDivider().marginSymmetric(vertical: 16.h),
-          buildDefaultTabWidget('#F9F7DB', 'my_home_visit.svg', 'My Home Visit',
+          buildDefaultTabWidget('#FFEBF5', 'hv1.svg', AppLocalizations.of(context)!.language, () {
+            showModalBottomSheet(
+              context: context,
+              builder: (BuildContext context) {
+                return selectLanguage(context);
+              },
+            );
+          }),
+          getDivider().marginSymmetric(vertical: 16.h),
+          buildDefaultTabWidget('#F9F7DB', 'my_home_visit.svg', AppLocalizations.of(context)!.myHomeVisit,
               () {
             Constant.sendToNext(context, Routes.myHomeVisitScreenRoute);
           }),
           getDivider().marginSymmetric(vertical: 16.h),
-          buildDefaultTabWidget('#E7EEFF', 'my_tests.svg', 'My Test Bookings',
+          buildDefaultTabWidget('#E7EEFF', 'my_tests.svg', AppLocalizations.of(context)!.myTestBookings,
               () {
             Constant.sendToNext(context, Routes.myBookingScreenRoute);
           }),
           getDivider().marginSymmetric(vertical: 16.h),
-          buildDefaultTabWidget('#F9F7DB', 'situation.svg', 'My Networks', () {
+          buildDefaultTabWidget('#F9F7DB', 'situation.svg', AppLocalizations.of(context)!.myNetwork, () {
             Constant.sendToNext(context, Routes.myNetworksScreenRoute);
           }),
-          /*
-          getDivider().marginSymmetric(vertical: 16.h),
-          buildDefaultTabWidget('#FFEDE2', 'card.svg', 'My Cards', () {
-            Constant.sendToNext(context, Routes.myCardScreenRoute);
+         /* getDivider().marginSymmetric(vertical: 16.h),
+          buildDefaultTabWidget('#FFEDE2', 'time.svg', AppLocalizations.of(context)!.reminder, () {
+            Constant.sendToNext(context, Routes.reminderScreenRoute);
           }),*/
           getDivider().marginSymmetric(vertical: 16.h),
-          buildDefaultTabWidget('#FFEBF5', 'wallet_outline.svg', 'My Wallet',
+          buildDefaultTabWidget('#FFEBF5', 'wallet_outline.svg', AppLocalizations.of(context)!.myWallet,
               () {
             Constant.sendToNext(context, Routes.myWalletScreenRoute);
           }),
           getDivider().marginSymmetric(vertical: 16.h),
-          buildDefaultTabWidget('#FFEBF5', 'share.svg', 'Refer & Earn', () {
+          buildDefaultTabWidget('#FFEBF5', 'situation.svg', AppLocalizations.of(context)!.tutorial,
+              () {
+            Constant.sendToNext(context, Routes.introRoute, arguments: true);
+          }),
+          getDivider().marginSymmetric(vertical: 16.h),
+          buildDefaultTabWidget('#FFEBF5', 'share.svg', AppLocalizations.of(context)!.referEarn, () {
             var referralLink =
                 'https://yourapp.com/referral/abcd1234\nRegister with Refer code : ${profileController.user.value!.refCode!}\nEarn Upto 50%';
             shareReferralLink(referralLink);
           }),
           getDivider().marginSymmetric(vertical: 16.h),
-          buildDefaultTabWidget('#FFEBF5', 'contact.svg', 'Contact Us', () {
+          buildDefaultTabWidget('#FFEBF5', 'contact.svg', AppLocalizations.of(context)!.contactUs, () {
             Constant.moveToNext(Routes.contactUs);
           }),
           getVerSpace(57.h),
@@ -181,7 +196,7 @@ class _TabProfileState extends State<TabProfile> {
     return getButton(
       context,
       accentColor,
-      'Logout',
+      AppLocalizations.of(context)!.logOut,
       Colors.white,
       () {
         PrefData.setIsSignIn(false);

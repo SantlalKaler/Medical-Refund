@@ -1,5 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lab_test_app/presentation/app/screen/lists/labDetail/lab_controller.dart';
@@ -7,11 +9,13 @@ import 'package:lab_test_app/presentation/app/screen/lists/labDetail/lab_control
 import '../../../../../domain/model/HomeModel.dart';
 import '../../../../../domain/model/Lab.dart';
 import '../../../../../domain/model/specialist.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../../../domain/model/test.dart';
 import '../../../../base/color_data.dart';
 import '../../../../base/constant.dart';
 import '../../../../base/widget_utils.dart';
 import '../../../routes/app_routes.dart';
+import '../../lists/notification/notification_controller.dart';
 import '../home_controller.dart';
 
 class TabHome extends StatefulWidget {
@@ -23,15 +27,47 @@ class TabHome extends StatefulWidget {
   }
 }
 
-class _TabHomeState extends State<TabHome> {
+class _TabHomeState extends State<TabHome> with SingleTickerProviderStateMixin {
   late final HomeController homeController;
+  late final NotificationController notificationController;
+  late AnimationController animationController;
+  late Animation<double> animation;
 
   @override
   void initState() {
-    Get.delete<HomeController>();
+    // animations
+    animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 700));
+    animation = Tween<double>(begin: 1, end: .6).animate(CurvedAnimation(
+        parent: animationController, curve: Curves.bounceInOut));
+
+    animationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        animationController.reverse();
+      } else if (status == AnimationStatus.dismissed) {
+        animationController.forward();
+      }
+    });
+    //Get.delete<HomeController>();
     homeController = Get.put(HomeController());
     Get.put(LabController());
+    getNotificationInfo();
     super.initState();
+  }
+
+  getNotificationInfo() async {
+    Get.delete<NotificationController>();
+    notificationController = Get.put(NotificationController());
+    await notificationController.getUser();
+    if (notificationController.anyUnreadNotification.value) {
+      animationController.forward();
+    }
+  }
+
+  @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -81,7 +117,7 @@ class _TabHomeState extends State<TabHome> {
                                             children: [
                                               const SizedBox(height: 16),
                                               buildViewAllView(context,
-                                                  'Nearby Laboratories', () {
+                                                  AppLocalizations.of(context)!.nearbyLaboratories, () {
                                                 Constant.sendToNext(
                                                     context,
                                                     Routes
@@ -230,14 +266,14 @@ class _TabHomeState extends State<TabHome> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         homeController.settings.value!.result!.appSetting!.test!
-            ? getTabCell('#EEE5FF'.toColor(), 'test_icon.svg', 'Tests', () {
+            ? getTabCell('#EEE5FF'.toColor(), 'test_icon.svg', AppLocalizations.of(context)!.tests, () {
                 Constant.sendToNext(context, Routes.testsListsScreenRoute,
                     arguments: {"fromHome": true});
               })
             : getEmptyView(),
         getHorSpace(20.h),
         homeController.settings.value!.result!.appSetting!.labs!
-            ? getTabCell('#E2F4FF'.toColor(), 'lab_icon.svg', 'labs', () {
+            ? getTabCell('#E2F4FF'.toColor(), 'lab_icon.svg', AppLocalizations.of(context)!.labs, () {
                 Constant.sendToNext(context, Routes.nearbyLabScreenRoute);
               })
             : getEmptyView(),
@@ -359,7 +395,7 @@ class _TabHomeState extends State<TabHome> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    getCustomFont('Welcome', 22.sp, Colors.black, 1,
+                    getCustomFont(AppLocalizations.of(context)!.welcome, 22.sp, Colors.black, 1,
                         fontWeight: FontWeight.w700),
                     getVerSpace(3.h),
                     getCustomFont(
@@ -399,18 +435,21 @@ class _TabHomeState extends State<TabHome> {
                       ],
                     )
                   : getEmptyView(),
-              InkWell(
-                onTap: () {
-                  Constant.sendToNext(context, Routes.notificationScreenRoute);
-                },
-                child: getShadowDefaultContainer(
-                    height: 50.h,
-                    width: 50.h,
-                    color: Colors.white,
-                    child: Center(
-                        child: getSvgImage('Notification.svg',
-                            height: 24.h, width: 24.h))),
-              ),
+              ScaleTransition(
+                  scale: animation,
+                  child: InkWell(
+                    onTap: () {
+                      Constant.sendToNext(
+                          context, Routes.notificationScreenRoute);
+                    },
+                    child: getShadowDefaultContainer(
+                        height: 50.h,
+                        width: 50.h,
+                        color: Colors.white,
+                        child: Center(
+                            child: getSvgImage('Notification.svg',
+                                height: 24.h, width: 24.h))),
+                  )),
             ],
           ).paddingSymmetric(horizontal: 20.h)
         : getEmptyView());
@@ -509,7 +548,7 @@ Widget buildViewAllView(BuildContext context, String title, Function function) {
           function();
         },
         child: getCustomFont(
-          "View All",
+          AppLocalizations.of(context)!.viewAll,
           15.sp,
           accentColor,
           1,

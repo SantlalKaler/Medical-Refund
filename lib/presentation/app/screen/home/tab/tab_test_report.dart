@@ -9,6 +9,7 @@ import '../../../../base/color_data.dart';
 import '../../../../base/constant.dart';
 import '../../../../base/widget_utils.dart';
 import '../../../controller/controller.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../data/data_file.dart';
 import '../../../models/model_latest_report.dart';
 import '../../lists/boooking/booking_controller.dart';
@@ -42,7 +43,7 @@ class _TabTestReportsState extends State<TabTestReports> {
     return Column(
       children: [
         getVerSpace(20.h),
-        getBackAppBar(context, () {}, 'Test Reports', withLeading: false),
+        getBackAppBar(context, () {},AppLocalizations.of(context)!.testReports, withLeading: false),
         getVerSpace(20.h),
         GetBuilder<BookingController>(
             init: BookingController(),
@@ -72,11 +73,11 @@ class _TabTestReportsState extends State<TabTestReports> {
       children: [
         getNoDataWidget(
           context,
-          'No Test Reports Yet!',
-          'Once you go to home, then you go to \nliabrary for get reports.',
+          AppLocalizations.of(context)!.noTestReportsYet,
+          AppLocalizations.of(context)!.noTestReportDesc,
           "no_report_icon.svg",
           withButton: true,
-          btnText: 'Go to Home',
+          btnText: AppLocalizations.of(context)!.goToHome,
           btnClick: () {
             bottomController.bottomBarSelectedItem.value = 0;
           },

@@ -6,6 +6,7 @@ import 'package:lab_test_app/data/response_status.dart';
 import 'package:lab_test_app/domain/model/MessageReceivedModel.dart';
 import '../../../../base/color_data.dart';
 import '../../../../base/constant.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../../base/widget_utils.dart';
 import '../../../data/data_file.dart';
 import '../../../models/model_profile.dart';
@@ -46,9 +47,9 @@ class _TabChatState extends State<TabChat> {
         getVerSpace(20.h),
         getBackAppBar(context, () {
           backClick();
-        }, 'Chats', withLeading: false),
+        }, AppLocalizations.of(context)!.chats, withLeading: false),
         getVerSpace(20.h),
-        getSearchTextFieldWidget(context, 56.h, 'Search...', searchController,
+        getSearchTextFieldWidget(context, 56.h, '${AppLocalizations.of(context)!.search}...', searchController,
             (value) {
           chatController.searchChatHeads(value);
         }),

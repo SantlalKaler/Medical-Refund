@@ -8,6 +8,7 @@ import 'package:lab_test_app/presentation/app/screen/lists/tests/test_controller
 
 import '../../../../base/color_data.dart';
 import '../../../../base/constant.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../../base/widget_utils.dart';
 import '../../../routes/app_routes.dart';
 
@@ -54,7 +55,7 @@ class _TestDetailScreenState extends State<TestDetailScreen> {
                 () {
                   backClick();
                 },
-                'Test Detail',
+                AppLocalizations.of(context)!.testDetails,
               ),
               getVerSpace(20.h),
               GetBuilder<TestController>(
@@ -86,17 +87,17 @@ class _TestDetailScreenState extends State<TestDetailScreen> {
     return GetBuilder(
         init: TestController(),
         builder: (controller) {
-            return Column(
-              children: [
-                getShadowDefaultContainer(
-                    // height: 404.h,
-                    color: Colors.white,
-                    margin: EdgeInsets.symmetric(horizontal: 20.h),
-                    padding: EdgeInsets.all(20.h),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        /*
+          return Column(
+            children: [
+              getShadowDefaultContainer(
+                  // height: 404.h,
+                  color: Colors.white,
+                  margin: EdgeInsets.symmetric(horizontal: 20.h),
+                  padding: EdgeInsets.all(20.h),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      /*
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -106,22 +107,22 @@ class _TestDetailScreenState extends State<TestDetailScreen> {
                       ],
                     ),
                     getVerSpace(14.h),*/
-                        getCustomFont(test!.title!, 22.sp, Colors.black, 2,
-                            fontWeight: FontWeight.w700),
-                        getVerSpace(6.h),
-                        getCustomFont(test.shortDesc!, 15.sp, greyFontColor, 3,
-                            fontWeight: FontWeight.w500),
-                        getVerSpace(20.h),
-                        getDivider(),
-                        getVerSpace(20.h),
-                        /*
+                      getCustomFont(test!.title!, 22.sp, Colors.black, 2,
+                          fontWeight: FontWeight.w700),
+                      getVerSpace(6.h),
+                      getCustomFont(test.shortDesc!, 15.sp, greyFontColor, 3,
+                          fontWeight: FontWeight.w500),
+                      getVerSpace(20.h),
+                      getDivider(),
+                      getVerSpace(20.h),
+                      /*
                     getMultilineCustomFont(
                         Constant.removeHtmlTags(test.desc!), 17.sp, greyFontColor,
                         txtHeight: 1.5),*/
-                        HtmlWidget(
-                          test.desc!,
-                        ),
-                        /* ReadMoreText(
+                      HtmlWidget(
+                        test.desc!,
+                      ),
+                      /* ReadMoreText(
                       Constant.removeHtmlTags(test.desc!),
                       trimLines: 5,
                       colorClickableText: Colors.red,
@@ -131,7 +132,7 @@ class _TestDetailScreenState extends State<TestDetailScreen> {
                       trimExpandedText: 'Show less',
                       moreStyle: TextStyle(fontSize: 17.sp, color: accentColor),
                     )*/
-                        /*buildTaxRow('Tax', '\$1.50'),
+                      /*buildTaxRow('Tax', '\$1.50'),
                     getVerSpace(20.h),
                     buildTaxRow('GST', '\$2.50'),
                     getVerSpace(20.h),
@@ -140,10 +141,10 @@ class _TestDetailScreenState extends State<TestDetailScreen> {
                     getDivider(),
                     getVerSpace(20.h),
                     getTotalRow()*/
-                      ],
-                    )),
-              ],
-            );
+                    ],
+                  )),
+            ],
+          );
         });
   }
 
@@ -152,8 +153,8 @@ class _TestDetailScreenState extends State<TestDetailScreen> {
     var test = controller.testDetails.value!.result!.test;
 
     return labsList.isEmpty
-        ? const Text(
-            'No labs found!',
+        ? Text(
+            "${AppLocalizations.of(context)!.no} ${AppLocalizations.of(context)!.lab} ${AppLocalizations.of(context)!.found}",
             textAlign: TextAlign.center,
           )
         : ListView.builder(
@@ -178,10 +179,14 @@ class _TestDetailScreenState extends State<TestDetailScreen> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Image.network(
+                      getCircularNetworkImage(
+                        context,
+                        100,
+                        200,
+                        10,
                         labPrice.labImage!,
-                        width: 100,
                       ),
+                      getHorSpace(10),
                       Expanded(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -195,18 +200,18 @@ class _TestDetailScreenState extends State<TestDetailScreen> {
                                 fontWeight: FontWeight.w700),
                             getVerSpace(5.h),
                             buildLocationRow(
-                                labPrice.officeAddress!, Get.width, 2),
+                                labPrice.officeAddress!, Get.width, 5),
                             getVerSpace(10.h),
                             getDivider(),
                             getVerSpace(10.h),
-                            buildTaxRow('Booking',
+                            buildTaxRow(AppLocalizations.of(context)!.booking,
                                 Constant.getRuppee(labPrice.bookingPrice), ''),
-                            buildTaxRow('Price',
+                            buildTaxRow(AppLocalizations.of(context)!.price,
                                 Constant.getRuppee(labPrice.priceBefore), ''),
-                            buildTaxRow('Pay only',
+                            buildTaxRow(AppLocalizations.of(context)!.payOnly,
                                 Constant.getRuppee(labPrice.price), ''),
                             buildTaxRow(
-                                'MR will pay',
+                                AppLocalizations.of(context)!.mrWillPay,
                                 Constant.getRuppee(
                                     labPrice.priceBefore! - labPrice.price!),
                                 '',
@@ -253,7 +258,7 @@ class _TestDetailScreenState extends State<TestDetailScreen> {
                                             });
                                       },
                                       child: Text(
-                                        'Book now \n${Constant.getRuppee(labPrice.bookingPrice)}',
+                                        '${AppLocalizations.of(context)!.bookNow} \n${Constant.getRuppee(labPrice.bookingPrice)}',
                                         textAlign: TextAlign.center,
                                       )),
                                 ),
@@ -271,7 +276,7 @@ class _TestDetailScreenState extends State<TestDetailScreen> {
                                             Routes.labDetailScreenRoute,
                                             arguments: "${labPrice.labId}");
                                       },
-                                      child: const Text('View in lab')),
+                                      child:  Text(AppLocalizations.of(context)!.viewInLab)),
                                 ),
                               ],
                             ),

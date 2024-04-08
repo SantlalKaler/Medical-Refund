@@ -1,8 +1,11 @@
+import 'package:flutter/material.dart';
+
 import '../models/intro_model.dart';
 import '../models/model_bottom_nav.dart';
 import '../models/model_chat.dart';
 import '../models/model_country.dart';
 import '../models/model_home_visit.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../models/model_latest_report.dart';
 import '../models/model_nearby_lab.dart';
 import '../models/model_notification.dart';
@@ -16,15 +19,17 @@ import '../models/model_test_panel.dart';
 import '../models/model_top_specialist.dart';
 
 class DataFile {
-  static List<ModelIntro> introList = [
-    ModelIntro("intro1.png", "Welcome to Medical Refund!",
-        "The organisation and contents of laboratories are determined by the differing requirements."),
-    ModelIntro("intro2.png", "High Quality Laboratories!",
-        "Engineers use laboratories as well to design, build, and test technological devices."),
-    ModelIntro("intro3.png", "You Can Request a Home Visit",
-        "A chemist or biologist might use a wet laboratory, while a psychologist's laboratory."),
+
+  static List<ModelIntro> introList (BuildContext context) => [
+    ModelIntro("intro1.png", AppLocalizations.of(context)!.intro1Title,
+        AppLocalizations.of(context)!.intro1Description),
+    ModelIntro("intro2.png", AppLocalizations.of(context)!.intro2Title,
+        AppLocalizations.of(context)!.intro2Description),
+    ModelIntro("intro3.png",  AppLocalizations.of(context)!.intro3Title,
+        AppLocalizations.of(context)!.intro3Description),
     ModelIntro(
-        "intro4.png", "Let’s Get Started", "Sign up or login for get start.")
+        "intro4.png",  AppLocalizations.of(context)!.intro4Title,
+        AppLocalizations.of(context)!.intro4Description)
   ];
 
   static List<ModelCountry> countryList = [

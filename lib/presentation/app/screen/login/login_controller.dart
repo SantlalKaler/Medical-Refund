@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:lab_test_app/data/api.dart';
 import 'package:lab_test_app/data/app_urls.dart';
 import 'package:lab_test_app/domain/model/CommonModel.dart';
@@ -90,19 +91,18 @@ class LoginController extends GetxController {
     print('Device Token: $token');
   }
 
-  validate() async {
+  validate(BuildContext context) async {
+    Constant.printValue("Button text : ${btnTxt.value}");
     if (mobileController.value.text.isEmpty ||
         mobileController.value.text.length < 10) {
       showSnackbar("Alert", "Enter Valid Mobile Number");
-    } else if (btnTxt.value == "Get Otp") {
+    } else  {
       isResend.value=false;
-      await getOtp();
-    } else {
-      verifyOtp();
+      await getOtp(context);
     }
   }
 
-  getOtp() async {
+  getOtp(BuildContext context) async {
     isLoading();
     var deviceType = Platform.isAndroid ? "Android" : 'Ios';
     var token = await PrefData.getToken();
@@ -117,7 +117,7 @@ class LoginController extends GetxController {
 
     if (response.status == Status.success.name) {
       isEnable();
-      changeBtnTxt("Login");
+      //changeBtnTxt(AppLocalizations.of(context)!.logIn);
     }
     isLoading();
 

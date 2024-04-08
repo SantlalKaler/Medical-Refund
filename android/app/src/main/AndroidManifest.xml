@@ -50,6 +50,14 @@
             </intent-filter>
         </activity>
 
+        <!--<service
+            android:name="com.medicalrefund.app.PushNotificationService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>-->
+
         <!-- Don't delete the meta-data below.de
 
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->

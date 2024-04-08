@@ -39,7 +39,7 @@ class Constant {
       String inputDate = date;
       DateTime parsedDate = DateTime.parse(inputDate);
       String formattedDate = DateFormat(changeInto).format(parsedDate);
-      printValue(" Input date: $date\nOutput date: $formattedDate");
+      //printValue(" Input date: $date\nOutput date: $formattedDate");
       return formattedDate;
     } else {
       DateFormat inputFormat = DateFormat(format);
@@ -68,6 +68,7 @@ class Constant {
   }
 
   static moveToNext(String route, {Object? arguments}) {
+    Constant.printValue("Argument is $arguments");
     if (arguments != null) {
       Get.toNamed(route, arguments: arguments);
     } else {

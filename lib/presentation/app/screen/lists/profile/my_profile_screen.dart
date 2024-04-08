@@ -7,6 +7,7 @@ import 'package:lab_test_app/presentation/app/screen/lists/profile/profile_contr
 import '../../../../../data/app_urls.dart';
 import '../../../../../domain/model/auth/user.dart';
 import '../../../../base/color_data.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../../base/constant.dart';
 import '../../../../base/pref_data.dart';
 import '../../../../base/widget_utils.dart';
@@ -67,7 +68,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                 children: [
                                   getBackAppBar(context, () {
                                     backClick();
-                                  }, 'My Profile',
+                                  }, AppLocalizations.of(context)!.myProfile,
                                       withLeading:
                                           !controller.isSpecialist.value),
                                   getVerSpace(20.h),
@@ -127,11 +128,11 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
 
     return Wrap(
       children: [
-        buildRow('Full Name', user != null ? user.name! : specialist!.name!),
+        buildRow(AppLocalizations.of(context)!.fullName, user != null ? user.name! : specialist!.name!),
         getDivider().marginSymmetric(vertical: 16.h),
-        buildRow('Email', user != null ? user.email! : ""),
+        buildRow(AppLocalizations.of(context)!.email, user != null ? user.email! : ""),
         getDivider().marginSymmetric(vertical: 16.h),
-        buildRow('Mobile Number',
+        buildRow(AppLocalizations.of(context)!.mobileNumber,
             '+91 ${user != null ? user.mobile! : specialist!.mobile!}'),
         getDivider().marginSymmetric(vertical: 16.h),
         Visibility(
@@ -139,7 +140,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
           child: Column(
             children: [
               buildRow(
-                  'Date of Birth',
+                  AppLocalizations.of(context)!.dateOfBirth,
                   Constant.changeDateFormat(
                       user != null ? user.dobDate! : "1997-09-09")),
               getDivider().marginSymmetric(vertical: 16.h),
@@ -151,7 +152,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
               getDivider().marginSymmetric(vertical: 16.h),
               buildRow('IFSC', user.ifsc ?? ""),
               getDivider().marginSymmetric(vertical: 16.h),*/
-              buildRow('Pan Number', user!.panNumber ?? ""),
+              buildRow(AppLocalizations.of(context)!.panNumber, user!.panNumber ?? ""),
               getDivider().marginSymmetric(vertical: 16.h),
               if (user.panImage != null && user.panImage!.isNotEmpty)
                 getCircularNetworkImage(context, double.infinity, 150.h, 22.h,
@@ -192,7 +193,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
     return getButton(
       context,
       accentColor,
-      'Edit Profile',
+      AppLocalizations.of(context)!.editProfile,
       Colors.white,
       () {
         Constant.sendToNext(context, Routes.editProfileScreenRoute);

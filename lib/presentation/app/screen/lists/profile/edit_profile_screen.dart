@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:lab_test_app/presentation/app/screen/lists/profile/profile_controller.dart';
 import 'package:lab_test_app/presentation/base/view_utils.dart';
@@ -55,7 +56,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 getVerSpace(20.h),
                 getBackAppBar(context, () {
                   backClick();
-                }, 'Edit Profile'),
+                }, AppLocalizations.of(context)!.editProfile),
                 getVerSpace(20.h),
                 GetBuilder<ProfileController>(
                   init: ProfileController(),
@@ -93,7 +94,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           : getButton(
               context,
               accentColor,
-              'Save',
+              AppLocalizations.of(context)!.save,
               Colors.white,
               () {
                 controller.validate();
@@ -114,21 +115,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         children: [
           getDefaultTextFiledWithLabel(
             context,
-            "Enter full name",
+            AppLocalizations.of(context)!.enterFullName,
             profileController.nameController.value,
             height: 60.h,
             validator: (email) {
               if (email!.isNotEmpty) {
                 return null;
               } else {
-                return 'Please enter full name';
+                return AppLocalizations.of(context)!.enterFullName;
               }
             },
           ),
           getVerSpace(20.h),
           getDefaultTextFiledWithLabel(
             context,
-            "Enter your email",
+            AppLocalizations.of(context)!.email,
             profileController.emailController.value,
             height: 60.h,
             keyboardType: TextInputType.emailAddress,
@@ -146,7 +147,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   children: [
                     getDefaultTextFiledWithLabel(
                       context,
-                      "Enter phone number",
+                      AppLocalizations.of(context)!.enterYourMobile,
                       profileController.phoneController.value,
                       isEnable: false,
                       height: 60.h,
@@ -160,7 +161,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       },
                     ),
                     getVerSpace(20.h),
-                    getDefaultTextFiledWithLabel(context, "Date of Birth",
+                    getDefaultTextFiledWithLabel(
+                        context,
+                        AppLocalizations.of(context)!.dateOfBirth,
                         profileController.birthController.value,
                         height: 60.h,
                         withSufix: true,
@@ -204,14 +207,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     getVerSpace(20.h),*/
                     getDefaultTextFiledWithLabel(
                       context,
-                      "Enter pan number",
+                      AppLocalizations.of(context)!.enterPanNumber,
                       length: 10,
                       profileController.panNumberController.value,
                       height: 60.h,
                       keyboardType: TextInputType.text,
                     ),
                     getVerSpace(20.h),
-                    buildRow('PAN Image size should be less than 5 MB', ""),
+                    buildRow(
+                        "${AppLocalizations.of(context)!.panImageSize}(5MB)",
+                        ""),
                     getVerSpace(20.h),
                     getPanCell(context)
                   ],

@@ -8,9 +8,12 @@ import '../../../../../data/api.dart';
 
 class NotificationController extends GetxController {
   var notifications = Rxn<NotificationModel>();
+  RxList<Result> notificationList = RxList();
   var user = Rxn<User>();
+  RxInt selectedNotification = 0.obs;
 
   RxBool loading = false.obs;
+  RxBool anyUnreadNotification = false.obs;
   API api = API();
 
   setLoading() {
@@ -21,19 +24,40 @@ class NotificationController extends GetxController {
   getUser() async {
     user.value = await PrefData.getUser();
     update();
-    getNotifications();
+    await getNotifications();
   }
 
-
   getNotifications() async {
-    setLoading();
-    var res = await api.getRequest(AppUrls.notifications, {
-      "id": user.value?.id,
-      "pageNumber": '1',
-      "pageSize": '20'
-    });
-    setLoading();
-    notifications.value = NotificationModel.fromJson(res);
-    update();
+    try {
+      setLoading();
+
+      var res =
+          await api.getRequest(AppUrls.notifications, {"id": user.value?.id});
+      notifications.value = NotificationModel.fromJson(res);
+      if (notifications.value != null &&
+          notifications.value!.result != null &&
+          notifications.value!.result!.isNotEmpty) {
+        for (var notification in notifications.value!.result!) {
+          if (!notification.read!) {
+            anyUnreadNotification.value = true;
+            break;
+          }
+        }
+      }
+      update();
+    } finally {
+      setLoading();
+      update();
+    }
+  }
+
+  readNotification() async {
+    try {
+      var res = await api.postRequest(AppUrls.readNotification,
+          {"id": notifications.value!.result![selectedNotification.value]});
+      if (res['status'] == "success") {
+        getNotifications();
+      }
+    } finally {}
   }
 }

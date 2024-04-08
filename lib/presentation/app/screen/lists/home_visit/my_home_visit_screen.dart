@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get/get.dart';
 import 'package:lab_test_app/domain/model/MyBookingResponse.dart';
 import 'package:lab_test_app/presentation/base/color_data.dart';
@@ -57,7 +58,7 @@ class _MyHomeVisitScreenState extends State<MyHomeVisitScreen> {
             getVerSpace(20.h),
             getBackAppBar(context, () {
               backClick();
-            }, 'My Home Visit'),
+            }, AppLocalizations.of(context)!.myHomeVisit),
             getVerSpace(10.h),
             GetBuilder<BookingController>(
                 init: BookingController(),

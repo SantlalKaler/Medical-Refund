@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:lab_test_app/domain/model/Lab.dart';
 import 'package:lab_test_app/domain/model/LabDetailsModel.dart';
 import 'package:lab_test_app/presentation/app/screen/lists/labDetail/lab_controller.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:lab_test_app/presentation/base/view_utils.dart';
 
 import '../../../../../data/response_status.dart';
@@ -79,7 +80,7 @@ class _LabDetailScreenState extends State<LabDetailScreen> {
                                   buildAboutLabContainer(controller
                                       .labDetails.value!.result!.detail!),
                                   getVerSpace(20.h),
-                                  buildTitleRow('About', () {
+                                  buildTitleRow(AppLocalizations.of(context)!.about, () {
                                     Constant.sendToNext(
                                         context, Routes.aboutLabScreenRoute);
                                   }),
@@ -90,7 +91,7 @@ class _LabDetailScreenState extends State<LabDetailScreen> {
                                   getButton(
                                     context,
                                     accentColor,
-                                    'Select Test to proceed',
+                                    AppLocalizations.of(context)!.selectTestToProceed,
                                     Colors.white,
                                     () {
                                       if (controller.selectedTests.isEmpty) {

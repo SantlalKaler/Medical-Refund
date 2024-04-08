@@ -7,6 +7,7 @@ import 'package:lab_test_app/presentation/app/screen/lists/wallet/wallet_control
 import 'package:lab_test_app/presentation/base/view_utils.dart';
 
 import '../../../../base/color_data.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../../base/constant.dart';
 import '../../../../base/widget_utils.dart';
 import '../../../routes/app_routes.dart';
@@ -51,7 +52,7 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
                 getVerSpace(20.h),
                 getBackAppBar(context, () {
                   backClick();
-                }, "Wallet"),
+                }, AppLocalizations.of(context)!.wallet),
                 GetBuilder<WalletController>(
                     init: WalletController(),
                     builder: (controller) => controller.loading.value
@@ -63,7 +64,10 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
                               buildButtonView(context),
                               getVerSpace(30.h),
                               getCustomFont(
-                                  "Wallet Transactions", 20.sp, Colors.black, 1,
+                                  "${AppLocalizations.of(context)!.wallet} ${AppLocalizations.of(context)!.transaction}",
+                                  20.sp,
+                                  Colors.black,
+                                  1,
                                   fontWeight: FontWeight.w700),
                               getVerSpace(20.h),
                               buildWalletTransaction(context)
@@ -92,7 +96,8 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                getCustomFont("Wallet Amount", 18.sp, Colors.black, 1,
+                getCustomFont(AppLocalizations.of(context)!.walletAmount, 18.sp,
+                    Colors.black, 1,
                     fontWeight: FontWeight.w700),
                 getCustomFont(
                     "Rs. ${controller.wallet.value?.result?.totalAmount ?? '0'}",
@@ -116,13 +121,13 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
             child: getButton(
               context,
               accentColor,
-              'Request \nWithdrawal',
+              AppLocalizations.of(context)!.requestWithdrawal,
               Colors.white,
               () {
                 if (controller.wallet.value?.result?.totalAmount == null ||
                     controller.wallet.value!.result!.totalAmount! < 500) {
                   showSnackbar('Alert!',
-                      'Amount must be more than Rs 500, You can only use this amount for bookings.');
+                      '${AppLocalizations.of(context)!.amountMustBeMoreThan} Rs 500, ${AppLocalizations.of(context)!.youCanOnlyUseThisAmountForBookings}');
                   return;
                 } else if (controller.user.value?.panNumber?.isEmpty == true) {
                   showSnackbar('Alert!',
@@ -147,7 +152,7 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
             child: getButton(
               context,
               accentColor,
-              'Linked \nAccount',
+              AppLocalizations.of(context)!.linkedAccount,
               Colors.white,
               () {
                 Constant.moveToNext(Routes.bankDetailsScreenRoute);
@@ -171,7 +176,10 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
         ? Center(
             heightFactor: 5.0,
             child: getCustomFont(
-                "No transactions found", 20.sp, greyFontColor, 1,
+                AppLocalizations.of(context)!.noTransactionFound,
+                20.sp,
+                greyFontColor,
+                1,
                 fontWeight: FontWeight.w500),
           )
         : ListView.builder(
@@ -215,11 +223,14 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
                     Text(
                         "${transactionIn ? "+" : "-"}Rs. ${transaction.amount.toString()}"),
                     Text(
-                      (transaction.type == "IN" || transaction.type == "OUT") ? "Success" : "Pending" ?? "",
+                      (transaction.type == "IN" || transaction.type == "OUT")
+                          ? "Success"
+                          : "Pending" ?? "",
                       style: TextStyle(
-                          color: (transaction.type == "IN" || transaction.type == "OUT")
+                          color: (transaction.type == "IN" ||
+                                  transaction.type == "OUT")
                               ? Colors.green
-                                  : Colors.red),
+                              : Colors.red),
                     )
                   ],
                 ),
