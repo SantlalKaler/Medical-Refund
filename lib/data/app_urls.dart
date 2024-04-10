@@ -31,6 +31,7 @@ class AppUrls {
   static const addLabReview = "add-lab-review";
   static const addSpecialistReview = "add-specialist-review";
   static const createPayment = "create-payment";
+  static const removeProfile = "remove-profile-image";
 
   static const home = "home";
 

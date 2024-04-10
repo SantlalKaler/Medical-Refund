@@ -1,10 +1,11 @@
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:lab_test_app/presentation/app/screen/lists/profile/profile_controller.dart';
 import 'package:lab_test_app/presentation/base/view_utils.dart';
 
@@ -378,7 +379,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
           Positioned.fill(
             child: Align(
-              alignment: Alignment.bottomRight,
+              alignment: Alignment.topRight,
               child: InkWell(
                 onTap: () {
                   _profilePic();
@@ -399,6 +400,34 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   child: Center(
                     child: getSvgImage('edit.svg', height: 24.h, width: 24.h),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned.fill(
+            child: Align(
+              alignment: Alignment.bottomRight,
+              child: InkWell(
+                onTap: () async{
+                  await profileController.deleteProfilePic();
+                },
+                child: Container(
+                  width: 36.h,
+                  height: 36.h,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0x289a90b8),
+                        blurRadius: 32.h,
+                        offset: const Offset(0, 9),
+                      ),
+                    ],
+                    color: Colors.white,
+                  ),
+                  child: const Center(
+                    child: Icon(Icons.delete, color: Colors.red,),
                   ),
                 ),
               ),
@@ -464,14 +493,43 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     ).marginSymmetric(horizontal: 20.h);
   }
 
+  Future _cropImage(String name, String path) async {
+   // if (profileController.profilePicPath.value.isNotEmpty) {
+      CroppedFile? cropped = await ImageCropper().cropImage(
+          sourcePath: path,
+          aspectRatioPresets: [
+            CropAspectRatioPreset.square,
+            CropAspectRatioPreset.ratio3x2,
+            CropAspectRatioPreset.original,
+            CropAspectRatioPreset.ratio4x3,
+            CropAspectRatioPreset.ratio16x9
+          ],
+          uiSettings: [
+            AndroidUiSettings(
+                toolbarTitle: 'Crop',
+                cropGridColor: Colors.black,
+                initAspectRatio: CropAspectRatioPreset.original,
+                lockAspectRatio: false),
+            IOSUiSettings(title: 'Crop')
+          ]);
+
+      if (cropped != null) {
+        profileController.setProfilePicNameNPath(name, cropped.path);
+        Constant.printValue("path is ${cropped.path}");
+        /*setState(() {
+          profileController.imageFile = File(cropped.path);
+        });*/
+      }
+   // }
+  }
+
   _profilePic({bool isProfilePic = true}) async {
     final result = await FilePicker.platform
         .pickFiles(type: FileType.custom, allowedExtensions: ['jpg', 'png']);
 
     if (result == null) return;
     if (isProfilePic) {
-      profileController.setProfilePicNameNPath(
-          result.files.first.name, result.files.first.path!);
+      _cropImage(result.files.first.name, result.files.first.path!);
     } else {
       File file = File(result.files.single.path!);
       int fileSizeInBytes = await file.length(); // Get file size in bytes

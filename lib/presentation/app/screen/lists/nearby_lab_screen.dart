@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 
 import '../../../base/constant.dart';
 import '../../../base/widget_utils.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../data/data_file.dart';
 import '../../models/model_nearby_lab.dart';
 import '../common/lab_list_view.dart';
@@ -28,7 +29,7 @@ class _NearbyLabScreenState extends State<NearbyLabScreen> {
   }
 
   void backClick() {
-    Constant.backToPrev(context : context);
+    Constant.backToPrev(context: context);
   }
 
   List<ModelNearbyLab> nearbyLabList = DataFile.nearbyLabList;
@@ -48,9 +49,13 @@ class _NearbyLabScreenState extends State<NearbyLabScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 getVerSpace(20.h),
-                getBackAppBar(context, () {
-                  backClick();
-                }, 'Nearby Laboratories'),
+                getBackAppBar(
+                  context,
+                  () {
+                    backClick();
+                  },
+                  AppLocalizations.of(context)!.nearbyLaboratories,
+                ),
                 getVerSpace(20.h),
                 buildLabListView(homeController.searchData.value!, 'Lab')
               ],
@@ -58,5 +63,4 @@ class _NearbyLabScreenState extends State<NearbyLabScreen> {
           )),
     );
   }
-
 }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
@@ -49,10 +50,21 @@ class ProfileController extends GetxController {
   RxString panPicPath = "".obs;
   RxBool isSpecialist = false.obs;
   RxBool loading = false.obs;
+  File? imageFile;
 
   setProfilePicNameNPath(name, path) {
     profilePicName.value = name;
     profilePicPath.value = path;
+    update();
+  }
+
+  deleteProfilePic() async {
+    if (profilePicPath.value.isNotEmpty) {
+      profilePicName.value = "";
+      profilePicPath.value = "";
+    } else {
+      await deleteDP();
+    }
     update();
   }
 
@@ -172,6 +184,31 @@ class ProfileController extends GetxController {
     }
   }
 
+  deleteDP() async{
+    isLoading();
+    try {
+      var res = await api.postRequest(AppUrls.removeProfile,
+          {"id": isSpecialist.value ? specialist.value?.id : user.value?.id});
+      var updateProfile = UpdateProfileModel.fromJson(res);
+      showSnackbar("Message", updateProfile.message);
+
+      if (updateProfile.status == Status.success.name) {
+        isSpecialist.value
+            ? PrefData.saveUserSpecialist(jsonEncode(updateProfile.result))
+            : PrefData.saveUser(jsonEncode(updateProfile.result));
+        Constant.moveToNextAndReplace(isSpecialist.value
+            ? Routes.homeSpecialistScreenRoute
+            : Routes.homeScreenRoute);
+      }
+    /*  if(res['status'] == 'success'){
+        Get.back();
+      }*/
+    } finally {
+      isLoading();
+      update();
+    }
+  }
+
   updateDP() async {
     isLoading();
     dio.FormData data = dio.FormData.fromMap(
@@ -180,8 +217,10 @@ class ProfileController extends GetxController {
         "image": profilePicPath.value.isEmpty
             ? user.value?.image.toString()
             : await dio.MultipartFile.fromFile(profilePicPath.value,
-                filename: profilePicPath.value.split('/').last,
-                contentType: MediaType('image', 'jpeg')),
+            filename: profilePicPath.value
+                .split('/')
+                .last,
+            contentType: MediaType('image', 'jpeg')),
       },
     );
 
@@ -207,8 +246,10 @@ class ProfileController extends GetxController {
         "image": panPicPath.value.isEmpty
             ? user.value?.panImage.toString()
             : await dio.MultipartFile.fromFile(panPicPath.value,
-                filename: panPicPath.value.split('/').last,
-                contentType: MediaType('image', 'jpeg')),
+            filename: panPicPath.value
+                .split('/')
+                .last,
+            contentType: MediaType('image', 'jpeg')),
       },
     );
 
@@ -232,30 +273,30 @@ class ProfileController extends GetxController {
     isLoading();
     var data = isSpecialist.value
         ? {
-            "id": specialist.value?.id,
-            "email": emailController.value.text,
-            "name": nameController.value.text,
-            "priceBefore": priceBeforeController.value.text,
-            "officeAddress": addressController.value.text,
-            "education": educationController.value.text,
-            "city": city.value!.id!,
-            "desc": descController.value.text,
-            "totalPatients": totalPatientsController.value.text,
-            "expereance": experienceController.value.text,
-            "price": priceController.value.text,
-          }
+      "id": specialist.value?.id,
+      "email": emailController.value.text,
+      "name": nameController.value.text,
+      "priceBefore": priceBeforeController.value.text,
+      "officeAddress": addressController.value.text,
+      "education": educationController.value.text,
+      "city": city.value!.id!,
+      "desc": descController.value.text,
+      "totalPatients": totalPatientsController.value.text,
+      "expereance": experienceController.value.text,
+      "price": priceController.value.text,
+    }
         : {
-            "id": user.value?.id,
-            "dob": Constant.changeDateFormat(birthController.value.text,
-                upload: true),
-            "name": nameController.value.text,
-            "email": emailController.value.text,
-            "panNumber": panNumberController.value.text,
-            "bankName": bankNameController.value.text,
-            "accNumber": accNumberController.value.text,
-            "accHolderName": accHolderNameController.value.text,
-            "ifsc": ifscCodeController.value.text,
-          };
+      "id": user.value?.id,
+      "dob": Constant.changeDateFormat(birthController.value.text,
+          upload: true),
+      "name": nameController.value.text,
+      "email": emailController.value.text,
+      "panNumber": panNumberController.value.text,
+      "bankName": bankNameController.value.text,
+      "accNumber": accNumberController.value.text,
+      "accHolderName": accHolderNameController.value.text,
+      "ifsc": ifscCodeController.value.text,
+    };
     var res = await api.postRequest(
         isSpecialist.value
             ? AppUrls.specialistUpdateProfile

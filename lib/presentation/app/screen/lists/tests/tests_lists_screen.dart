@@ -10,6 +10,7 @@ import 'package:lab_test_app/presentation/app/screen/lists/labDetail/lab_control
 import '../../../../../domain/model/test.dart';
 import '../../../../base/color_data.dart';
 import '../../../../base/constant.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../../base/widget_utils.dart';
 import '../../../data/data_file.dart';
 import '../../../routes/app_routes.dart';
@@ -59,7 +60,7 @@ class _TestsListsScreenState extends State<TestsListsScreen> {
               getVerSpace(20.h),
               getBackAppBar(context, () {
                 backClick();
-              }, 'Tests'),
+              }, AppLocalizations.of(context)!.tests,),
               getVerSpace(20.h),
               Expanded(
                 child: Column(

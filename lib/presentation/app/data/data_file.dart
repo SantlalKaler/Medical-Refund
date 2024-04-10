@@ -21,11 +21,11 @@ import '../models/model_top_specialist.dart';
 class DataFile {
 
   static List<ModelIntro> introList (BuildContext context) => [
-    ModelIntro("intro1.png", AppLocalizations.of(context)!.intro1Title,
+    ModelIntro("1.jpg", AppLocalizations.of(context)!.intro1Title,
         AppLocalizations.of(context)!.intro1Description),
-    ModelIntro("intro2.png", AppLocalizations.of(context)!.intro2Title,
+    ModelIntro("2.jpg", AppLocalizations.of(context)!.intro2Title,
         AppLocalizations.of(context)!.intro2Description),
-    ModelIntro("intro3.png",  AppLocalizations.of(context)!.intro3Title,
+    ModelIntro("3.jpg",  AppLocalizations.of(context)!.intro3Title,
         AppLocalizations.of(context)!.intro3Description),
     ModelIntro(
         "intro4.png",  AppLocalizations.of(context)!.intro4Title,
