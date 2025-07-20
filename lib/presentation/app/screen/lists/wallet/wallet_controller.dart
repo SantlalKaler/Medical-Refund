@@ -60,8 +60,8 @@ class WalletController extends GetxController {
     setLoading();
     var res = await api.getRequest(AppUrls.wallet, {
       "id": user.value?.id,
-      "pageNumber": '1',
-      "pageSize": '20'
+      /*"pageNumber": '1',
+      "pageSize": '20'*/
     });
     setLoading();
     wallet.value = WalletModel.fromJson(res);

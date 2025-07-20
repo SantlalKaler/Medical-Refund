@@ -170,7 +170,8 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
   }
 
   Widget buildWalletTransaction(BuildContext context) {
-    var transactions = controller.wallet.value?.result?.transactions;
+    var transactions = controller.wallet.value?.result?.transactions!.reversed.toList();
+
 
     return transactions?.isEmpty == true
         ? Center(
@@ -202,8 +203,8 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
                 title: Padding(
                   padding: const EdgeInsets.only(bottom: 5.0),
                   child: Text(transactionIn
-                      ? "Received From ${transaction.booking?.users?.name}"
-                      : "Transfer to Bank"),
+                      ? "Received From ${transaction.booking?.users?.name ?? ""}"
+                      : transaction.booking == null ? "Transfer to Bank" : "Used for booking"),
                 ),
                 subtitle: Column(
                   mainAxisAlignment: MainAxisAlignment.start,

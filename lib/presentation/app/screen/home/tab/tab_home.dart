@@ -116,8 +116,10 @@ class _TabHomeState extends State<TabHome> with SingleTickerProviderStateMixin {
                                         : Column(
                                             children: [
                                               const SizedBox(height: 16),
-                                              buildViewAllView(context,
-                                                  AppLocalizations.of(context)!.nearbyLaboratories, () {
+                                              buildViewAllView(
+                                                  context,
+                                                  AppLocalizations.of(context)!
+                                                      .nearbyLaboratories, () {
                                                 Constant.sendToNext(
                                                     context,
                                                     Routes
@@ -266,14 +268,16 @@ class _TabHomeState extends State<TabHome> with SingleTickerProviderStateMixin {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         homeController.settings.value!.result!.appSetting!.test!
-            ? getTabCell('#EEE5FF'.toColor(), 'test_icon.svg', AppLocalizations.of(context)!.tests, () {
+            ? getTabCell('#EEE5FF'.toColor(), 'test_icon.svg',
+                AppLocalizations.of(context)!.tests, () {
                 Constant.sendToNext(context, Routes.testsListsScreenRoute,
                     arguments: {"fromHome": true});
               })
             : getEmptyView(),
         getHorSpace(20.h),
         homeController.settings.value!.result!.appSetting!.labs!
-            ? getTabCell('#E2F4FF'.toColor(), 'lab_icon.svg', AppLocalizations.of(context)!.labs, () {
+            ? getTabCell('#E2F4FF'.toColor(), 'lab_icon.svg',
+                AppLocalizations.of(context)!.labs, () {
                 Constant.sendToNext(context, Routes.nearbyLabScreenRoute);
               })
             : getEmptyView(),
@@ -395,7 +399,8 @@ class _TabHomeState extends State<TabHome> with SingleTickerProviderStateMixin {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    getCustomFont(AppLocalizations.of(context)!.welcome, 22.sp, Colors.black, 1,
+                    getCustomFont(AppLocalizations.of(context)!.welcome, 22.sp,
+                        Colors.black, 1,
                         fontWeight: FontWeight.w700),
                     getVerSpace(3.h),
                     getCustomFont(
@@ -458,49 +463,51 @@ class _TabHomeState extends State<TabHome> with SingleTickerProviderStateMixin {
 
 SizedBox buildNearbyLabView(List<Lab> labs) {
   return SizedBox(
-      width: double.infinity,
-      child: SingleChildScrollView(
+      //width: 200,
+      height: 240,
+      child: ListView.builder(
+        itemCount: labs.length,
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
-        child: Row(
-          children: [
-            for (var item in labs)
-              Padding(
-                padding: const EdgeInsets.only(left: 20),
-                child: GestureDetector(
-                  onTap: () {
-                    Constant.moveToNext(Routes.labDetailScreenRoute,
-                        arguments: "${item.id}");
-                  },
-                  child: Card(
-                    clipBehavior: Clip.antiAlias,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(children: [
-                        Image.network(
-                          item.image ?? '',
-                          height: 100,
-                          fit: BoxFit.cover,
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            getCustomFont(item.name!, 18.sp, Colors.black, 1,
-                                fontWeight: FontWeight.w700),
-                            getVerSpace(5.h),
-                            buildLocationRow(item.officeAddress!, 100.h, 2),
-                          ],
-                        ),
-                      ]),
+        itemBuilder: (context, index) {
+          var item = labs[index];
+          return Container(
+            width: 250,
+            padding: const EdgeInsets.only(left: 20),
+            child: GestureDetector(
+              onTap: () {
+                Constant.moveToNext(Routes.labDetailScreenRoute,
+                    arguments: "${item.id}");
+              },
+              child: Card(
+                clipBehavior: Clip.antiAlias,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(children: [
+                    Image.network(
+                      item.image ?? '',
+                      height: 100,
+                      fit: BoxFit.cover,
                     ),
-                  ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        getCustomFont("${item.name}, ${item.name}", 18.sp,
+                            Colors.black, 2,
+                            fontWeight: FontWeight.w700),
+                        getVerSpace(5.h),
+                        buildLocationRow(item.officeAddress!, 100.h, 2),
+                      ],
+                    ),
+                  ]),
                 ),
               ),
-          ],
-        ),
+            ),
+          );
+        },
       )
 
       //  ListView.builder(

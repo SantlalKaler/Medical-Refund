@@ -35,7 +35,7 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
   final formGlobalKey = GlobalKey<FormState>();
 
   num testPendingAmount = 0;
-  num testBookingPrice = 0;
+  //num testBookingPrice = 0;
   num testPrice = 0;
   num payOnly = 0;
   num mrWillPay = 0;
@@ -77,7 +77,7 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
   }
 
   setSingleTestPrice() {
-    testBookingPrice = controller.test.value?.bookingPrice ?? 0;
+    controller.testBookingPrice.value = controller.test.value?.bookingPrice ?? 0;
     testPrice = controller.test.value?.priceBefore ?? 0;
     payOnly = controller.test.value?.price ?? 0;
     mrWillPay = ((controller.test.value?.priceBefore ?? 0) -
@@ -89,7 +89,7 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
     if (controller.multiTests.isTrue) {
       for (var test in labController.selectedTests) {
         //Constant.printValue("TEst Price : ${test.test?.price}");
-        testBookingPrice += test.bookingPrice!;
+        controller.testBookingPrice.value += test.bookingPrice!;
         testPrice += test.priceBefore ?? 0;
         payOnly += test.price ?? 0;
         mrWillPay += ((test.priceBefore ?? 0) - (test.price ?? 0));
@@ -123,7 +123,7 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
             : (controller.priceList.value != null)
                 ? controller.test.value!.adminCommission!
                 : (controller.multiTests.isTrue)
-                    ? testBookingPrice
+                    ? controller.testBookingPrice.value
                     : (controller.test.value!.priceBefore!);
 
     initializeScreenSize(context);
@@ -198,29 +198,29 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
   }
 
   Widget buildTotalAmountRow() {
-    return Row(
+    return Obx(() => Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         isTestBooking
             ? getCustomFont(
-                "${AppLocalizations.of(context)!.booking} ${Constant.getRuppee(testBookingPrice)}\n"
+            "${AppLocalizations.of(context)!.booking} ${Constant.getRuppee(controller.testBookingPrice.value)}\n"
                 "${AppLocalizations.of(context)!.lab} ${AppLocalizations.of(context)!.price} ${Constant.getRuppee(testPrice)}\n"
                 "${AppLocalizations.of(context)!.youPayOnlyAtLab}${Constant.getRuppee(payOnly)}\n"
                 "${AppLocalizations.of(context)!.mrWillPay} ${Constant.getRuppee(mrWillPay)}",
-                18.sp,
-                Colors.black,
-                5,
-                fontWeight: FontWeight.w500)
+            18.sp,
+            Colors.black,
+            5,
+            fontWeight: FontWeight.w500)
             : getCustomFont(
-                "Booking price ${Constant.getRuppee(0)}\nPending amount at Lab ${Constant.getRuppee(0)}",
-                18.sp,
-                Colors.black,
-                2,
-                fontWeight: FontWeight.w500),
+            "Booking price ${Constant.getRuppee(0)}\nPending amount at Lab ${Constant.getRuppee(0)}",
+            18.sp,
+            Colors.black,
+            2,
+            fontWeight: FontWeight.w500),
         /* getCustomFont(Constant.getRuppee(price), 28.sp, accentColor, 1,
           fontWeight: FontWeight.w700)*/
       ],
-    ).marginSymmetric(horizontal: 20.h);
+    ).marginSymmetric(horizontal: 20.h));
   }
 
   Widget buildSelectedLabView() {
@@ -283,9 +283,9 @@ class _AddBookingScreenState extends State<AddBookingScreen> {
   Widget buildPlaceOrderButton(BuildContext context, bookinAmount) {
     Constant.printValue("Booking Amount in button $bookinAmount");
     return Obx(() {
-      num newPrice = testBookingPrice;
+      num newPrice = controller.testBookingPrice.value;
       if (controller.walletApplied.isTrue) {
-        num remainingPrice = testBookingPrice -
+        num remainingPrice = controller.testBookingPrice.value -
             (walletController.wallet.value?.result?.totalAmount ?? 0);
         if (remainingPrice <= 0) {
           newPrice = 0;

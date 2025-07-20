@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:lab_test_app/presentation/app/screen/lists/profile/profile_controller.dart';
 import 'package:lab_test_app/presentation/base/view_utils.dart';
 
@@ -134,13 +134,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             profileController.emailController.value,
             height: 60.h,
             keyboardType: TextInputType.emailAddress,
-            validator: (email) {
+            /*validator: (email) {
               if (email!.isNotEmpty) {
                 return null;
               } else {
                 return 'Please enter email address';
               }
-            },
+            },*/
           ),
           getVerSpace(20.h),
           !isSpecialist
@@ -382,7 +382,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               alignment: Alignment.topRight,
               child: InkWell(
                 onTap: () {
-                  _profilePic();
+                  chooseOption();
                 },
                 child: Container(
                   width: 36.h,
@@ -409,7 +409,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             child: Align(
               alignment: Alignment.bottomRight,
               child: InkWell(
-                onTap: () async{
+                onTap: () async {
                   await profileController.deleteProfilePic();
                 },
                 child: Container(
@@ -427,7 +427,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     color: Colors.white,
                   ),
                   child: const Center(
-                    child: Icon(Icons.delete, color: Colors.red,),
+                    child: Icon(
+                      Icons.delete,
+                      color: Colors.red,
+                    ),
                   ),
                 ),
               ),
@@ -465,7 +468,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               alignment: Alignment.topRight,
               child: InkWell(
                 onTap: () {
-                  _profilePic(isProfilePic: false);
+                  chooseOption(isProfilePic: false);
                 },
                 child: Container(
                   width: 36.h,
@@ -493,36 +496,89 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     ).marginSymmetric(horizontal: 20.h);
   }
 
-  Future _cropImage(String name, String path) async {
-   // if (profileController.profilePicPath.value.isNotEmpty) {
-      CroppedFile? cropped = await ImageCropper().cropImage(
-          sourcePath: path,
-          aspectRatioPresets: [
-            CropAspectRatioPreset.square,
-            CropAspectRatioPreset.ratio3x2,
-            CropAspectRatioPreset.original,
-            CropAspectRatioPreset.ratio4x3,
-            CropAspectRatioPreset.ratio16x9
-          ],
-          uiSettings: [
-            AndroidUiSettings(
-                toolbarTitle: 'Crop',
-                cropGridColor: Colors.black,
-                initAspectRatio: CropAspectRatioPreset.original,
-                lockAspectRatio: false),
-            IOSUiSettings(title: 'Crop')
-          ]);
+  Future _cropImage(String name, String path, bool isProfilePic ) async {
+    // if (profileController.profilePicPath.value.isNotEmpty) {
+    CroppedFile? cropped =
+        await ImageCropper().cropImage(sourcePath: path, aspectRatioPresets: [
+      CropAspectRatioPreset.square,
+      CropAspectRatioPreset.ratio3x2,
+      CropAspectRatioPreset.original,
+      CropAspectRatioPreset.ratio4x3,
+      CropAspectRatioPreset.ratio16x9
+    ], uiSettings: [
+      AndroidUiSettings(
+          toolbarTitle: 'Crop',
+          cropGridColor: Colors.black,
+          initAspectRatio: CropAspectRatioPreset.original,
+          lockAspectRatio: false),
+      IOSUiSettings(title: 'Crop')
+    ]);
 
-      if (cropped != null) {
+    if (cropped != null) {
+      Constant.printValue("path is ${cropped.path}\n Is profile pic $isProfilePic");
+      if (isProfilePic) {
         profileController.setProfilePicNameNPath(name, cropped.path);
-        Constant.printValue("path is ${cropped.path}");
-        /*setState(() {
+      } else {
+        profileController.setPanPicNameNPath(name, cropped.path);
+      }
+      /*setState(() {
           profileController.imageFile = File(cropped.path);
         });*/
-      }
-   // }
+    }
+    // }
   }
 
+  chooseOption({bool isProfilePic = true}) async {
+    showModalBottomSheet(
+      showDragHandle: true,
+      useSafeArea: true,
+      context: context,
+      builder: (context) {
+        return SizedBox(
+          height: 150,
+          child: Column(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text("Camera"),
+                onTap: () async {
+                  await pickImage(ImageSource.camera, isProfilePic);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo),
+                title: const Text("Gallery"),
+                onTap: () async {
+                  await pickImage(ImageSource.gallery,
+                      isProfilePic);
+                },
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  pickImage(ImageSource source, bool isProfilePic ) async {
+    ImagePicker picker = ImagePicker();
+    XFile? image = await picker.pickImage(source: source);
+    Get.back();
+    if (image == null) return;
+
+    File file = File(image.path);
+    int fileSizeInBytes = await file.length(); // Get file size in bytes
+    double fileSizeInKB = fileSizeInBytes / 1024; // Convert bytes to KB
+    double fileSizeInMB = fileSizeInKB / 1024; //
+
+    if (fileSizeInMB > 5) {
+      showSnackbar("",
+          "Selected file is too large (exceeds 5 MB). Please choose a smaller file.");
+    } else {
+      _cropImage(image.name, image.path, isProfilePic);
+    }
+  }
+/*
   _profilePic({bool isProfilePic = true}) async {
     final result = await FilePicker.platform
         .pickFiles(type: FileType.custom, allowedExtensions: ['jpg', 'png']);
@@ -548,5 +604,5 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
     Constant.printValue(
         "Profile name : ${result.files.first.name}\n file path : ${result.files.first.path}");
-  }
+  }*/
 }

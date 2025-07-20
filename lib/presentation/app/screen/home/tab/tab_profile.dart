@@ -173,7 +173,7 @@ class _TabProfileState extends State<TabProfile> {
           getDivider().marginSymmetric(vertical: 16.h),
           buildDefaultTabWidget('#FFEBF5', 'share.svg', AppLocalizations.of(context)!.referEarn, () {
             var referralLink =
-                'https://yourapp.com/referral/abcd1234\nRegister with Refer code : ${profileController.user.value!.refCode!}\nEarn Upto 50%';
+                'https://play.google.com/store/apps/details?id=com.medicalrefund.app\nRegister with Refer code : ${profileController.user.value!.refCode!}\nEarn Upto 50%';
             shareReferralLink(referralLink);
           }),
           getDivider().marginSymmetric(vertical: 16.h),

@@ -52,6 +52,29 @@ class _LabDetailScreenState extends State<LabDetailScreen> {
       child: Scaffold(
         backgroundColor: Colors.white,
         extendBodyBehindAppBar: true,
+        bottomSheet: Padding(
+          padding: EdgeInsets.all(10.0),
+          child: getButton(
+            context,
+            accentColor,
+            AppLocalizations.of(context)!.selectTestToProceed,
+            Colors.white,
+            () {
+              if (controller.selectedTests.isEmpty) {
+                showSnackbar("Warning!", "Please select any test to continue");
+              } else {
+                Constant.moveToNext(Routes.addBookingScreenRoute, arguments: {
+                  'multiTests': true,
+                });
+              }
+            },
+            18.sp,
+            weight: FontWeight.w700,
+            buttonHeight: 60.h,
+            buttonWidth: double.infinity,
+            borderRadius: BorderRadius.circular(22.h),
+          ),
+        ),
         body: GetBuilder<LabController>(
           init: LabController(),
           builder: (controller) => controller.loading.value
@@ -80,37 +103,17 @@ class _LabDetailScreenState extends State<LabDetailScreen> {
                                   buildAboutLabContainer(controller
                                       .labDetails.value!.result!.detail!),
                                   getVerSpace(20.h),
-                                  buildTitleRow(AppLocalizations.of(context)!.about, () {
+                                  buildTitleRow(
+                                      AppLocalizations.of(context)!.about, () {
                                     Constant.sendToNext(
                                         context, Routes.aboutLabScreenRoute);
                                   }),
                                   getVerSpace(20.h),
-                                  buildTitleRow("${controller.lab.value?.officeAddress }"?? "Address", () {}),
+                                  buildTitleRow(
+                                      "${controller.lab.value?.officeAddress}",
+                                      () {}),
                                   buildTestsListView(),
-                                  getVerSpace(20.h),
-                                  getButton(
-                                    context,
-                                    accentColor,
-                                    AppLocalizations.of(context)!.selectTestToProceed,
-                                    Colors.white,
-                                    () {
-                                      if (controller.selectedTests.isEmpty) {
-                                        showSnackbar("Warning!",
-                                            "Please select any test to continue");
-                                      } else {
-                                        Constant.moveToNext(
-                                            Routes.addBookingScreenRoute,
-                                            arguments: {
-                                              'multiTests':true,
-                                            });
-                                      }
-                                    },
-                                    18.sp,
-                                    weight: FontWeight.w700,
-                                    buttonHeight: 60.h,
-                                    buttonWidth: double.infinity,
-                                    borderRadius: BorderRadius.circular(22.h),
-                                  )
+                                  getVerSpace(100.h),
                                 ],
                               ).marginSymmetric(horizontal: 20.h),
                             ],
@@ -128,20 +131,23 @@ class _LabDetailScreenState extends State<LabDetailScreen> {
 
   Widget buildAboutLabContainer(Lab lab) {
     return getShadowDefaultContainer(
-      height: 200.h,
+      height: 250.h,
       width: double.infinity,
       // margin: EdgeInsets.symmetric(horizontal: 20.h),
       padding: EdgeInsets.all(20.h),
       color: Colors.white,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              getCustomFont(lab.name!, 22.sp, Colors.black, 2,
-                  fontWeight: FontWeight.w700),
+              getCustomFont(lab.name!, 20.sp, Colors.black, 2,
+                  fontWeight: FontWeight.w600),
+              getVerSpace(10),
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   InkWell(
                       onTap: () => Constant.launchURL(
@@ -264,7 +270,9 @@ class _LabDetailScreenState extends State<LabDetailScreen> {
               return singleTestView(test, () {
                 controller.selectTest(test);
               }, colorList[random.nextInt(colorList.length)].toColor(),
-                  showPrice: true, testSelected: isTestSelected(test), testSelectable: true);
+                  showPrice: true,
+                  testSelected: isTestSelected(test),
+                  testSelectable: true);
             }),
           );
         });

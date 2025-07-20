@@ -36,6 +36,7 @@ class AddBookingController extends GetxController {
 
   var test = Rxn<Tests>();
   var lab = Rxn<Lab>();
+  Rx<num> testBookingPrice = 0.obs;
   var priceList = Rxn<PriceList>();
   RxBool multiTests = false.obs;
   RxInt selectedPos = 0.obs;
@@ -132,9 +133,9 @@ class AddBookingController extends GetxController {
       ...ids,
       "user": user.value!.id!,
       "tax": '5',
-      "useWallet": walletApplied.isTrue ? "y" : "n",
+      "useWallet": walletApplied.isTrue ? "Y" : "N",
       "balance": walletApplied.isTrue
-          ? (walletController.wallet.value?.result?.totalAmount ?? "0")
+          ? (testBookingPrice.value)
           : "",
       'price': (specialist.value != null)
           ? specialist.value!.price!
@@ -202,7 +203,7 @@ class AddBookingController extends GetxController {
   }
 
   CFSession? createSession(orderId, paymentSessionId) {
-    CFEnvironment environment = CFEnvironment.SANDBOX;
+    CFEnvironment environment = CFEnvironment.PRODUCTION;
     // Constant.printValue("Session id is : $paymentSessionId");
     try {
       var session = CFSessionBuilder()

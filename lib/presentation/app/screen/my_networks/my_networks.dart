@@ -145,7 +145,7 @@ class _MyNetworkScreenState extends State<MyNetworkScreen> {
                 getCustomFont(user.user!.name!, 18.sp, Colors.black, 1,
                     fontWeight: FontWeight.w700, txtHeight: 1.4.h),
                 getVerSpace(4.h),
-                getCustomFont(user.user!.mobile!, 15.sp, greyFontColor, 1,
+                getCustomFont(maskPhoneNumber(user.user!.mobile!), 15.sp, greyFontColor, 1,
                     fontWeight: FontWeight.w500, txtHeight: 1.4.h),
               ],
             ),
@@ -155,3 +155,22 @@ class _MyNetworkScreenState extends State<MyNetworkScreen> {
     );
   }
 }
+
+String maskPhoneNumber(String phoneNumber) {
+  if (phoneNumber.length <= 4) {
+    // If the length of the phone number is 4 or less, return the original number.
+    return phoneNumber;
+  }
+  // Extract the first two characters and the last two characters.
+  String prefix = phoneNumber.substring(0, 2);
+  String suffix = phoneNumber.substring(phoneNumber.length - 2);
+
+  // Replace characters between the first two and last two characters with asterisks.
+  String maskedMiddle = phoneNumber.substring(2, phoneNumber.length - 2).replaceAll(RegExp(r'.'), '*');
+
+  // Concatenate the prefix, masked middle, and suffix to form the masked phone number.
+  String maskedPhoneNumber = '$prefix$maskedMiddle$suffix';
+
+  return maskedPhoneNumber;
+}
+
