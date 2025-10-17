@@ -25,12 +25,3 @@ Medical Refund is a Flutter-based mobile application that allows users to **pre-
 - **Payments:** Cashfree Payment Gateway
 - **Other:** Shared Preferences, Image Picker, Image Cropper, Rating Bar
 
-## Screenshots
-*(Add screenshots of key app screens here if available)*
-
-## Installation
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/lab_test_app.git
-```bash
-git clone https://github.com/yourusername/lab_test_app.git
